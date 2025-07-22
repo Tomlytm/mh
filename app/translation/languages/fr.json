@@ -1,0 +1,404 @@
+{
+  "language": "French",
+  "screens": {
+    "navigator": {
+      "home": "Accueil",
+      "trips": "Voyages",
+      "account": "Compte"
+    },
+    "login": {
+      "title": "Connexion",
+      "text": {
+        "login": "Connexion",
+        "emailAddress": "Adresse e-mail",
+        "password": "Mot de passe",
+        "forgotPassword": "Mot de passe oublié ?",
+        "reset": "Réinitialiser"
+      }
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié",
+      "text": {
+        "provideEmail": "Veuillez fournir l'adresse e-mail associée à votre compte",
+        "resetPassword": "Réinitialiser le mot de passe",
+        "emailAddress": "Adresse e-mail",
+        "verificationCode": "Code de vérification",
+        "verificationCodePlaceholder": "Entrez le code de vérification envoyé à votre e-mail",
+        "newPassword": "Nouveau mot de passe",
+        "newPasswordPlaceholder": "Créez un nouveau mot de passe",
+        "confirmNewPassword": "Confirmer le nouveau mot de passe",
+        "confirmNewPasswordPlaceholder": "Entrez à nouveau le nouveau mot de passe",
+        "changePassword": "Changer le mot de passe"
+      }
+    },
+    "homeScreen": {
+      "title": "Écran d'accueil",
+      "text": {
+        "nextRecommendedTrip": "PROCHAIN VOYAGE RECOMMANDÉ",
+        "noNextRecommendedTrip": "Aucun voyage recommandé trouvé",
+        "newlyAssignedTrips": "VOYAGES RÉCEMMENT ATTRIBUÉS",
+        "noNewlyAssignedTrips": "Aucun voyage récemment attribué trouvé",
+        "seeAllTrips": "VOIR TOUS LES VOYAGES",
+        "resetPassword": "Réinitialiser le mot de passe",
+        "acceptTrip": "Accepter le voyage",
+        "declineTrip": "Refuser le voyage"
+      }
+    },
+    "confirmCodeScreen": {
+      "title": "Écran de confirmation du code",
+      "text": {
+        "sentEmail": "Nous vous avons envoyé un e-mail avec le code de vérification à",
+        "confirmCode": "Confirmer le code",
+        "didntGetCode": "Vous n'avez pas reçu le code ?",
+        "resendIt": "Renvoyer",
+        "invalidOtp": "OTP invalide",
+        "otpDigitsOnly": "L'OTP ne peut contenir que des chiffres",
+        "validationError": "ERREUR DE VALIDATION",
+        "loginError": "ERREUR DE CONNEXION",
+        "error": "Erreur",
+        "somethingWentWrong": "Une erreur s'est produite",
+        "success": "Succès",
+        "otpResent": "L'OTP a été renvoyé",
+        "noUserProfile": "Aucun profil utilisateur attaché au conducteur."
+      }
+    },
+    "tripsScreen": {
+      "title": "Mes Voyages",
+      "text": {
+        "inputPlaceholder": "Trouver un numéro de commande",
+        "tabs": {
+          "new": "Nouveau",
+          "pending": "En attente",
+          "completed": "Complété"
+        },
+        "statusMessages": {
+          "noNewTrip": "Aucun nouveau voyage trouvé",
+          "noPendingTrip": "Aucun voyage en attente trouvé",
+          "noCompletedTrip": "Aucun voyage complété trouvé"
+        },
+        "modalTitles": {
+          "cancelTrip": "Annuler le voyage",
+          "accept": "Accepter le voyage",
+          "decline": "Refuser le voyage",
+          "delivered": "Livré",
+          "verifyOTP": "Vérifier l'OTP",
+          "verifyOTPComplete": "OTP Vérifié",
+          "verifyOTPLoading": "Vérification de l'OTP...",
+          "cancelTripLoading": "Annulation du voyage...",
+          "acceptTripLoading": "Acceptation du voyage...",
+          "declineTripLoading": "Refus du voyage..."
+        },
+        "toastMessages": {
+          "sessionTimeout": {
+            "title": "Temps de session écoulé",
+            "message": "Veuillez vous reconnecter"
+          },
+          "tripDeclined": {
+            "title": "Voyage Refusé",
+            "message": "Vous avez refusé le voyage avec succès"
+          },
+          "error": {
+            "title": "Erreur",
+            "message": "Une erreur est survenue",
+            "OtpError": "Veuillez fournir un OTP valide"
+          },
+          "success": {
+            "title": "Succès",
+            "message": "L'opération a été réussie"
+          },
+          "otpResent": {
+            "title": "SUCCÈS",
+            "message": "L'OTP DE VÉRIFICATION A ÉTÉ RENVOYÉ AVEC SUCCÈS"
+          }
+        }
+      }
+    },
+    "accountSettingsScreen": {
+      "header": {
+        "title": "Paramètres du Compte",
+        "subtitle": "Gérez les options de connexion de votre compte pour le sécuriser."
+      },
+      "accountInfo": {
+        "loginEmail": {
+          "label": "E-MAIL DE CONNEXION",
+          "placeholder": "votre.email@example.com"
+        },
+        "phoneNumber": {
+          "label": "NUMÉRO DE TÉLÉPHONE",
+          "placeholder": "+123 456 7890"
+        },
+        "password": {
+          "label": "MOT DE PASSE",
+          "lastChanged": "Dernière modification : 14 mai 2022"
+        }
+      },
+      "twoStepVerification": {
+        "label": "VÉRIFICATION EN 2 ÉTAPES",
+        "status": {
+          "on": "ACTIVÉ",
+          "off": "DÉSACTIVÉ"
+        }
+      },
+      "actions": {
+        "signOut": {
+          "title": "Déconnexion",
+          "text": "Déconnexion"
+        }
+      },
+      "modals": {
+        "changePassword": {
+          "title": "Changer le mot de passe",
+          "verificationCode": {
+            "label": "Code de vérification",
+            "placeholder": "Entrez le code de vérification envoyé à votre e-mail"
+          },
+          "newPassword": {
+            "label": "Nouveau mot de passe",
+            "placeholder": "Créez un nouveau mot de passe"
+          },
+          "confirmNewPassword": {
+            "label": "Confirmer le nouveau mot de passe",
+            "placeholder": "Entrez à nouveau le nouveau mot de passe"
+          },
+          "buttons": {
+            "changePassword": "Changer le mot de passe"
+          }
+        },
+        "twoFAModal": {
+          "title": "Vérification en 2 Étapes",
+          "description": "Vérifiez si c'est bien vous après avoir entré votre mot de passe en entrant le code de vérification envoyé au numéro fourni.",
+          "status": {
+            "on": "ACTIVÉ",
+            "off": "DÉSACTIVÉ"
+          },
+          "verified": {
+            "label": "Vérifié",
+            "method": "Les codes sont envoyés par message texte"
+          }
+        }
+      },
+      "toastMessages": {
+        "sessionTimeout": {
+          "title": "Temps de session écoulé",
+          "text": "Veuillez vous reconnecter"
+        },
+        "error": {
+          "title": "Erreur",
+          "text": "Une erreur est survenue"
+        },
+        "passwordResetRequestSuccess": {
+          "title": "Succès",
+          "text": "Code de vérification envoyé à votre e-mail"
+        },
+        "passwordResetSuccess": {
+          "title": "Succès",
+          "text": "LE MOT DE PASSE A ÉTÉ CHANGÉ AVEC SUCCÈS"
+        },
+        "passwordResetError": {
+          "title": "Erreur",
+          "text": "Veuillez remplir tous les champs"
+        },
+        "passwordMismatch": {
+          "title": "Erreur",
+          "text": "Les mots de passe ne correspondent pas"
+        },
+        "otpResent": {
+          "title": "SUCCÈS",
+          "text": "L'OTP DE VÉRIFICATION A ÉTÉ RENVOYÉ AVEC SUCCÈS"
+        }
+      },
+      "labels": {
+        "pleaseInputAllFields": "Veuillez remplir tous les champs",
+        "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+        "verificationCodeSent": "Code de vérification envoyé à votre e-mail"
+      }
+    },
+    "accountHomeScreen": {
+      "options": {
+        "updateProfile": {
+          "text": "Mettre à jour le profil"
+        },
+        "accountSettings": {
+          "text": "Paramètres du compte"
+        },
+        "legalSection": {
+          "title": "Légal",
+          "termsAndConditions": {
+            "text": "Conditions d'utilisation"
+          },
+          "privacyPolicy": {
+            "text": "Politique de confidentialité"
+          }
+        },
+        "changeLanguage": {
+          "text": "Changer la langue"
+        }
+      }
+    },
+    "updateProfileScreen": {
+      "fields": {
+        "firstName": {
+          "label": "Prénom",
+          "placeholder": "Entrez votre prénom"
+        },
+        "lastName": {
+          "label": "Nom",
+          "placeholder": "Entrez votre nom"
+        },
+        "contactDetails": {
+          "label": "Détails de contact"
+        },
+        "phoneNumber": {
+          "label": "Numéro de téléphone",
+          "placeholder": "Entrez votre numéro de téléphone"
+        },
+        "address": {
+          "label": "Adresse",
+          "placeholder": "Entrez votre adresse"
+        },
+        "city": {
+          "label": "Ville",
+          "placeholder": "Entrez votre ville"
+        },
+        "state": {
+          "label": "État",
+          "placeholder": "Entrez votre état"
+        },
+        "country": {
+          "label": "Pays",
+          "placeholder": "Entrez votre pays"
+        }
+      },
+      "buttons": {
+        "saveChanges": {
+          "text": "Enregistrer les modifications"
+        }
+      },
+      "toastMessages": {
+        "success": {
+          "title": "Succès",
+          "message": "Profil mis à jour avec succès"
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Erreur lors de la mise à jour du profil. Veuillez réessayer"
+        },
+        "sessionTimeout": {
+          "title": "Temps de session écoulé",
+          "message": "Veuillez vous reconnecter"
+        }
+      },
+      "loadingIndicator": {
+        "message": "Enregistrement..."
+      }
+    }
+  },
+  "components": {
+    "acceptTrip": {
+      "messages": {
+        "tripAccepted": "Voyage Accepté",
+        "confirmationText": "La demande a été acceptée et ajoutée à votre liste de voyages en attente."
+      },
+      "buttons": {
+        "dismiss": {
+          "text": "Ignorer"
+        }
+      }
+    },
+    "cancellingReasonModal": {
+      "title": "Pourquoi annulez-vous ?",
+      "reasons": {
+        "customerUnavailable": {
+          "header": "Client Indisponible",
+          "body": "Le client n'était pas disponible à l'adresse fournie."
+        },
+        "others": {
+          "header": "Autres",
+          "body": "Veuillez spécifier toute autre raison ci-dessous"
+        }
+      },
+      "placeholders": {
+        "additionalInformation": "Fournir des informations supplémentaires"
+      },
+      "buttons": {
+        "dismiss": {
+          "text": "Ignorer"
+        },
+        "submit": {
+          "text": "Soumettre"
+        }
+      }
+    },
+    "changePassword": {
+      "title": "Changer le mot de passe",
+      "placeholders": {
+        "currentPassword": "Entrez votre mot de passe actuel",
+        "newPassword": "Créer un nouveau mot de passe",
+        "confirmNewPassword": "Entrez à nouveau le nouveau mot de passe"
+      },
+      "buttons": {
+        "changePassword": {
+          "text": "Changer le mot de passe"
+        }
+      }
+    },
+    "completedTrip": {
+      "orderDetailId": "Numéro de commande",
+      "customerName": "Nom du client",
+      "deliveryDate": "Date de livraison"
+    },
+    "declineTrip": {
+      "title": "Refuser le voyage",
+      "confirmationText": "Êtes-vous sûr de vouloir refuser cette demande ? Cela ne peut pas être annulé.",
+      "confirmButton": "Confirmer",
+      "dismissButton": "Ignorer"
+    },
+    "deliveredOrderDetail": {
+      "title": "DÉTAILS DE LA COMMANDE",
+      "orderNumber": "Numéro de commande",
+      "orderItems": "Articles de la commande",
+      "orderQuantity": "QUANTITÉ",
+      "customerName": "Nom du client",
+      "customerPhoneNumber": "Numéro de téléphone du client",
+      "address": "Adresse"
+    },
+    "newOrderDetail": {
+      "title": "DÉTAILS DE LA COMMANDE",
+      "orderNumber": "NUMÉRO DE COMMANDE",
+      "productName": "NOM DU PRODUIT",
+      "address": "ADRESSE",
+      "declineButton": "Refuser",
+      "acceptButton": "Accepter"
+    },
+    "pendingOrderDetail": {
+      "title": "DÉTAILS DE LA COMMANDE",
+      "orderNumber": "NUMÉRO DE COMMANDE",
+      "orderItems": "ARTICLES DE LA COMMANDE",
+      "address": "ADRESSE",
+      "quantity": "QUANTITÉ",
+      "confirmDeliveryButton": "Confirmer la livraison"
+    },
+    "singleTrip": {
+      "orderDetailId": "Numéro de commande",
+      "customerAddress": "Adresse du client"
+    },
+    "singleTripDetailed": {
+      "orderNumber": "Numéro de commande",
+      "productName": "Nom du produit",
+      "address": "Adresse",
+      "customerInitials": "Initiales",
+      "customerName": "Nom du client",
+      "customerPhoneNumber": "Numéro de téléphone du client"
+    },
+    "successModal": {
+      "successTitle": "Succès",
+      "successMessage": "Vous avez livré ce colis avec succès. Passons au suivant."
+    },
+    "verifyDeliveryOTPModal": {
+      "otpPrompt": "Entrez le code OTP de vérification du client pour confirmer la livraison",
+      "resendOtp": "RENVoyer LE CODE OTP DE VÉRIFICATION",
+      "dismissButton": "Ignorer",
+      "verifyButton": "Vérifier"
+    }
+  }
+}

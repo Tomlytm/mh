@@ -1,0 +1,403 @@
+{
+  "language": "English",
+  "screens": {
+    "navigator": {
+      "home": "Home",
+      "trips": "Trips",
+      "account": "Account"
+    },
+    "login": {
+      "title": "Login",
+      "text": {
+        "login": "Login",
+        "emailAddress": "Email address",
+        "password": "Password",
+        "forgotPassword": "Forgot password?",
+        "reset": "Reset it"
+      }
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "text": {
+        "provideEmail": "Please provide the email address associated with your account",
+        "resetPassword": "Reset Password",
+        "verificationCode": "Verification code",
+        "verificationCodePlaceholder": "Enter verification code sent to your mail",
+        "newPassword": "New Password",
+        "newPasswordPlaceholder": "Create new password",
+        "confirmNewPassword": "Confirm New Password",
+        "confirmNewPasswordPlaceholder": "Enter new password again",
+        "changePassword": "Change Password"
+      }
+    },
+    "homeScreen": {
+      "title": "Home Screen",
+      "text": {
+        "nextRecommendedTrip": "NEXT RECOMMENDED TRIP",
+        "noNextRecommendedTrip": "No recommended trip found",
+        "newlyAssignedTrips": "NEWLY ASSIGNED TRIPS",
+        "noNewlyAssignedTrips": "No Newly Assigned trips found",
+        "seeAllTrips": "SEE ALL TRIPS",
+        "resetPassword": "Reset Password",
+        "acceptTrip": "Accept Trip",
+        "declineTrip": "Decline Trip"
+      }
+    },
+    "confirmCodeScreen": {
+      "title": "Confirm Code Screen",
+      "text": {
+        "sentEmail": "We have sent you an email with the verification code to",
+        "confirmCode": "Confirm Code",
+        "didntGetCode": "Didn't get the code?",
+        "resendIt": "Resend It",
+        "invalidOtp": "Invalid OTP",
+        "otpDigitsOnly": "OTP can only contain digits",
+        "validationError": "VALIDATION ERROR",
+        "loginError": "LOGIN ERROR",
+        "error": "Error",
+        "somethingWentWrong": "Something went wrong",
+        "success": "Success",
+        "otpResent": "OTP has been resent",
+        "noUserProfile": "No user profile attached to rider."
+      }
+    },
+    "tripsScreen": {
+      "title": "My Trips",
+      "text": {
+        "inputPlaceholder": "Find an order Number",
+        "tabs": {
+          "new": "New",
+          "pending": "Pending",
+          "completed": "Completed"
+        },
+        "statusMessages": {
+          "noNewTrip": "No new trips found",
+          "noPendingTrip": "No pending trips found",
+          "noCompletedTrip": "No completed trips found"
+        },
+        "modalTitles": {
+          "cancelTrip": "Cancel Trip",
+          "accept": "Accept Trip",
+          "decline": "Decline Trip",
+          "delivered": "Delivered",
+          "verifyOTP": "Verify OTP",
+          "verifyOTPComplete": "OTP Verified",
+          "verifyOTPLoading": "Verifying OTP...",
+          "cancelTripLoading": "Cancelling Trip...",
+          "acceptTripLoading": "Accepting Trip...",
+          "declineTripLoading": "Declining Trip..."
+        },
+        "toastMessages": {
+          "sessionTimeout": {
+            "title": "Session timeout",
+            "message": "Please login again"
+          },
+          "tripDeclined": {
+            "title": "Trip Declined",
+            "message": "You have successfully declined the trip"
+          },
+          "error": {
+            "title": "Error",
+            "message": "An error occurred",
+            "OtpError": "Please provide a valid OTP"
+          },
+          "success": {
+            "title": "Success",
+            "message": "Operation was successful"
+          },
+          "otpResent": {
+            "title": "SUCCESS",
+            "message": "VERIFICATION OTP HAS BEEN RESENT SUCCESSFULLY"
+          }
+        }
+      }
+    },
+    "accountSettingsScreen": {
+      "header": {
+        "title": "Account Settings",
+        "subtitle": "Manage your account login options to keep your account secure."
+      },
+      "accountInfo": {
+        "loginEmail": {
+          "label": "LOGIN EMAIL",
+          "placeholder": "your.email@example.com"
+        },
+        "phoneNumber": {
+          "label": "PHONE NO.",
+          "placeholder": "+123 456 7890"
+        },
+        "password": {
+          "label": "PASSWORD",
+          "lastChanged": "Last Changed: May 14, 2022"
+        }
+      },
+      "twoStepVerification": {
+        "label": "2-STEP VERIFICATION",
+        "status": {
+          "on": "ON",
+          "off": "OFF"
+        }
+      },
+      "actions": {
+        "signOut": {
+          "title": "Sign Out",
+          "text": "Sign Out"
+        }
+      },
+      "modals": {
+        "changePassword": {
+          "title": "Change Password",
+          "verificationCode": {
+            "label": "Verification code",
+            "placeholder": "Enter verification code sent to your mail"
+          },
+          "newPassword": {
+            "label": "New Password",
+            "placeholder": "Create new password"
+          },
+          "confirmNewPassword": {
+            "label": "Confirm New Password",
+            "placeholder": "Enter new password again"
+          },
+          "buttons": {
+            "changePassword": "Change Password"
+          }
+        },
+        "twoFAModal": {
+          "title": "2 Step Verification",
+          "description": "Verify if it’s you after you enter your password by entering the verification code sent to the number provided.",
+          "status": {
+            "on": "ON",
+            "off": "OFF"
+          },
+          "verified": {
+            "label": "Verified",
+            "method": "Codes are sent by text message"
+          }
+        }
+      },
+      "toastMessages": {
+        "sessionTimeout": {
+          "title": "Session timeout",
+          "text": "Please login again"
+        },
+        "error": {
+          "title": "Error",
+          "text": "Something went wrong"
+        },
+        "passwordResetRequestSuccess": {
+          "title": "Success",
+          "text": "Verification code sent to your email"
+        },
+        "passwordResetSuccess": {
+          "title": "Success",
+          "text": "PASSWORD HAS BEEN CHANGED SUCCESSFULLY"
+        },
+        "passwordResetError": {
+          "title": "Error",
+          "text": "Please input all fields"
+        },
+        "passwordMismatch": {
+          "title": "Error",
+          "text": "Passwords do not match"
+        },
+        "otpResent": {
+          "title": "SUCCESS",
+          "text": "VERIFICATION OTP HAS BEEN RESENT SUCCESSFULLY"
+        }
+      },
+      "labels": {
+        "pleaseInputAllFields": "Please input all fields",
+        "passwordsDoNotMatch": "Passwords do not match",
+        "verificationCodeSent": "Verification code sent to your email"
+      }
+    },
+    "accountHomeScreen": {
+      "options": {
+        "updateProfile": {
+          "text": "Update Profile"
+        },
+        "accountSettings": {
+          "text": "Account Settings"
+        },
+        "legalSection": {
+          "title": "Legal",
+          "termsAndConditions": {
+            "text": "Terms and Conditions"
+          },
+          "privacyPolicy": {
+            "text": "Privacy Policy"
+          }
+        },
+        "changeLanguage": {
+          "text": "Change Language"
+        }
+      }
+    },
+    "updateProfileScreen": {
+      "fields": {
+        "firstName": {
+          "label": "First Name",
+          "placeholder": "Enter your first name"
+        },
+        "lastName": {
+          "label": "Last Name",
+          "placeholder": "Enter your last name"
+        },
+        "contactDetails": {
+          "label": "Contact Details"
+        },
+        "phoneNumber": {
+          "label": "Phone No.",
+          "placeholder": "Enter your phone number"
+        },
+        "address": {
+          "label": "Address",
+          "placeholder": "Enter your address"
+        },
+        "city": {
+          "label": "City/Town",
+          "placeholder": "Enter your city or town"
+        },
+        "state": {
+          "label": "State",
+          "placeholder": "Enter your state"
+        },
+        "country": {
+          "label": "Country",
+          "placeholder": "Enter your country"
+        }
+      },
+      "buttons": {
+        "saveChanges": {
+          "text": "Save Changes"
+        }
+      },
+      "toastMessages": {
+        "success": {
+          "title": "Success",
+          "message": "Profile updated successfully"
+        },
+        "error": {
+          "title": "Error",
+          "message": "Error updating profile. Please try again"
+        },
+        "sessionTimeout": {
+          "title": "Session timeout",
+          "message": "Please login again"
+        }
+      },
+      "loadingIndicator": {
+        "message": "Saving..."
+      }
+    }
+  },
+  "components": {
+    "acceptTrip": {
+      "messages": {
+        "tripAccepted": "Trip Accepted",
+        "confirmationText": "The request has been accepted and added to your list of pending trips."
+      },
+      "buttons": {
+        "dismiss": {
+          "text": "Dismiss"
+        }
+      }
+    },
+    "cancellingReasonModal": {
+      "title": "Why are you canceling?",
+      "reasons": {
+        "customerUnavailable": {
+          "header": "Customer Unavailable",
+          "body": "Customer was not available at the provided address."
+        },
+        "others": {
+          "header": "Others",
+          "body": "Please specify any other reason below"
+        }
+      },
+      "placeholders": {
+        "additionalInformation": "Provide additional information"
+      },
+      "buttons": {
+        "dismiss": {
+          "text": "Dismiss"
+        },
+        "submit": {
+          "text": "Submit"
+        }
+      }
+    },
+    "changePassword": {
+      "title": "Change Password",
+      "placeholders": {
+        "currentPassword": "Enter your current password",
+        "newPassword": "Create new password",
+        "confirmNewPassword": "Enter new password again"
+      },
+      "buttons": {
+        "changePassword": {
+          "text": "Change Password"
+        }
+      }
+    },
+    "completedTrip": {
+      "orderDetailId": "Order Number",
+      "customerName": "Customer Name",
+      "deliveryDate": "Delivery Date"
+    },
+    "declineTrip": {
+      "title": "Decline Trip",
+      "confirmationText": "Are you sure you want to decline this request? This cannot be undone.",
+      "confirmButton": "Confirm",
+      "dismissButton": "Dismiss"
+    },
+    "deliveredOrderDetail": {
+      "title": "ORDER DETAILS",
+      "orderNumber": "Order Number",
+      "orderItems": "Order Items",
+      "orderQuantity": "QUANTITY",
+      "customerName": "Customer Name",
+      "customerPhoneNumber": "Customer Phone Number",
+      "address": "Address"
+    },
+    "newOrderDetail": {
+      "title": "ORDER DETAILS",
+      "orderNumber": "ORDER NUMBER",
+      "productName": "PRODUCT NAME",
+      "address": "ADDRESS",
+      "declineButton": "Decline",
+      "acceptButton": "Accept"
+    },
+    "pendingOrderDetail": {
+      "title": "ORDER DETAILS",
+      "orderNumber": "ORDER NUMBER",
+      "orderItems": "ORDER ITEMS",
+      "address": "ADDRESS",
+      "quantity": "QUANTITY",
+      "confirmDeliveryButton": "Confirm Delivery"
+    },
+    "singleTrip": {
+      "orderDetailId": "Order Number",
+      "customerAddress": "Customer Address"
+    },
+    "singleTripDetailed": {
+      "orderNumber": "Order Number",
+      "productName": "Product Name",
+      "address": "Address",
+      "customerInitials": "Initials",
+      "customerName": "Customer Name",
+      "customerPhoneNumber": "Customer Phone Number"
+    },
+    "successModal": {
+      "successTitle": "Success",
+      "successMessage": "You have successfully delivered this package. Onto the next one."
+    },
+    "verifyDeliveryOTPModal": {
+      "otpPrompt": "Enter customer verification OTP to confirm delivery",
+      "resendOtp": "RESEND VERIFICATION OTP",
+      "dismissButton": "Dismiss",
+      "verifyButton": "Verify"
+    }
+  }
+}
