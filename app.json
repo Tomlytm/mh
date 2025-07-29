@@ -7,6 +7,7 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "scheme": "lrm",
     "splash": {
       "image": "./app/assets/LRMSplashScreen.png",
       "resizeMode": "cover",

@@ -18,7 +18,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import ApiService from "../config/services";
 import constants from "../config/constants";
 import colors from "../config/colors";
-import LottieView from "lottie-react-native";
+import LottieView from "../components/LottieViewMock";
 import { validateEmail } from "../util/helpers";
 import { useTranslation } from "react-i18next";
 

@@ -29,7 +29,7 @@ import VerifyDeliveryOTPModal from "../components/VerifyDeliveryOTPModal";
 import ApiService from "../config/services";
 import { orderInformation } from "../util/app.interface";
 import { useStoreState } from "../util/token.store";
-import LottieView from "lottie-react-native";
+import LottieView from "../components/LottieViewMock";
 import constants from "../config/constants";
 import colors from "../config/colors";
 import { useTranslation } from "react-i18next";

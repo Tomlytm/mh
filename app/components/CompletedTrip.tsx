@@ -1,9 +1,11 @@
-import { Icon } from "@ui-kitten/components";
-import React from "react";
-import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
+import React, { useRef } from "react";
+import { StyleSheet, Text, TouchableWithoutFeedback, View, Animated } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import * as Haptics from "expo-haptics";
 import { orderInformation } from "../util/app.interface";
 import { useTranslation } from "react-i18next";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import colors from "../config/colors";
 
 interface CompletedTripProps {
   toggleModal: any;
@@ -11,76 +13,171 @@ interface CompletedTripProps {
 }
 
 export default function CompletedTrip(props: CompletedTripProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const scaleValue = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Animated.spring(scaleValue, {
+      toValue: 0.98,
+      useNativeDriver: true,
+      tension: 300,
+      friction: 10,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleValue, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 300,
+      friction: 10,
+    }).start();
+  };
+
   return (
-    <TouchableWithoutFeedback onPress={props.toggleModal}>
-      <View style={styles.container}>
-        <View style={styles.iconContainer}>
-          {/* <Icon style={styles.icon} fill="#EDD0D0" name="shopping-bag" /> */}
-        </View>
-        <View style={{ paddingLeft: 12, width: "80%" }}>
-          <Text
-            style={{
-              color: "#757575",
-              fontSize: 16,
-              fontWeight: "700",
-              marginVertical: 4,
-            }}
+    <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
+      <TouchableWithoutFeedback
+        onPress={props.toggleModal}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+      >
+        <View style={styles.container}>
+          <LinearGradient
+            colors={[colors.success + "15", colors.success + "08"]}
+            style={styles.iconContainer}
           >
-            {t("components.completedTrip.orderDetailId")}:{" "}
-            {props.data.orderDetailId}
-          </Text>
-          <Text style={{ fontSize: 16, fontWeight: "400" }}>
-            {props.data.customerFirstName} {props.data.customerLastName}
-          </Text>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={{ color: "#757575", marginTop: 4, paddingRight: 16 }}>
-              {props.data?.deliveryDate &&
-                `${t("components.completedTrip.deliveryDate")}: ${new Date(
-                  props.data?.deliveryDate.toString()
-                ).toLocaleString()}`}
+            <MaterialCommunityIcons
+              name="check-circle"
+              size={28}
+              color={colors.success}
+            />
+          </LinearGradient>
+
+          <View style={styles.contentContainer}>
+            <View style={styles.headerRow}>
+              <Text style={styles.orderIdText}>
+                {t("components.completedTrip.orderDetailId")}: #{props.data.orderDetailId}
+              </Text>
+              <View style={styles.statusBadge}>
+                <Text style={styles.statusText}>Completed</Text>
+              </View>
+            </View>
+
+            <Text style={styles.customerName}>
+              {props.data.customerFirstName} {props.data.customerLastName}
             </Text>
+
+            {props.data?.deliveryDate && (
+              <View style={styles.dateRow}>
+                <MaterialCommunityIcons
+                  name="calendar-check"
+                  size={16}
+                  color={colors.textLight}
+                  style={styles.dateIcon}
+                />
+                <Text style={styles.dateText}>
+                  {t("components.completedTrip.deliveryDate")}: {new Date(
+                    props.data.deliveryDate.toString()
+                  ).toLocaleDateString()}
+                </Text>
+              </View>
+            )}
+          </View>
+
+          <View style={styles.arrowContainer}>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={20}
+              color={colors.textLight}
+            />
           </View>
         </View>
-        <MaterialCommunityIcons
-          name="chevron-right"
-          size={24}
-          color="#959595"
-          style={styles.arrowIcon}
-        />
-
-      </View>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  arrowIcon: {
-    width: 24,
-    height: 24,
-  },
   container: {
-    width: "100%",
-    flex: 1,
+    backgroundColor: colors.secondary,
+    borderRadius: 16,
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 10,
-    borderTopWidth: 2,
-    borderTopColor: "#FFF3F3",
-    paddingRight: 10,
-  },
-  icon: {
-    width: 24,
-    height: 24,
+    marginVertical: 8,
+    marginHorizontal: 4,
+    padding: 16,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 3,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.success,
   },
   iconContainer: {
-    height: 48,
-    width: 48,
-    backgroundColor: "#000",
-    opacity: 0.75,
-    borderRadius: 8,
-    marginRight: 5,
+    height: 56,
+    width: 56,
+    borderRadius: 28,
     alignItems: "center",
     justifyContent: "center",
+    marginRight: 16,
+  },
+  contentContainer: {
+    flex: 1,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  orderIdText: {
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: "Inter",
+    color: colors.textLight,
+    flex: 1,
+  },
+  statusBadge: {
+    backgroundColor: colors.success + "15",
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: "600",
+    fontFamily: "Inter",
+    color: colors.success,
+  },
+  customerName: {
+    fontSize: 16,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.text,
+    marginBottom: 8,
+  },
+  dateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  dateIcon: {
+    marginRight: 6,
+  },
+  dateText: {
+    fontSize: 13,
+    fontWeight: "400",
+    fontFamily: "Inter",
+    color: colors.textLight,
+  },
+  arrowContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.support,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 12,
   },
 });

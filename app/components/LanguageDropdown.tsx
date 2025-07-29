@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { View, Text, TouchableOpacity, Modal, StyleSheet, Animated } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "@react-navigation/native";
@@ -15,21 +15,19 @@ const LanguageDropdown = () => {
   const { t, i18n } = useTranslation();
   const dropdownScale = React.useRef(new Animated.Value(1)).current;
 
-  useFocusEffect(
-    useCallback(() => {
-      AsyncStorage.getItem(constants.STORE_LANGUAGE_KEY).then((language:any) => {
-        const label =
-          languages.findLast((lang) => lang.code === language)?.label ||
-          "French";
-        setSelectedLanguage(label);
-      });
-    }, [])
-  );
-
   const languages = [
     { code: "en", label: "English" },
     { code: "fr", label: "French" },
   ];
+
+  useFocusEffect(
+    useCallback(() => {
+      // Temporarily default to French
+      const currentLang = i18n.language || "fr";
+      const label = languages.find((lang) => lang.code === currentLang)?.label || "French";
+      setSelectedLanguage(label);
+    }, [])
+  );
 
   const changeLanguage = async (
     languageCode: string,
@@ -38,7 +36,8 @@ const LanguageDropdown = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     i18n.changeLanguage(languageCode);
     setSelectedLanguage(languageLabel);
-    await AsyncStorage.setItem(constants.STORE_LANGUAGE_KEY, languageCode);
+    // Language storage temporarily disabled
+    // await AsyncStorage.setItem(constants.STORE_LANGUAGE_KEY, languageCode);
     setModalVisible(false);
   };
 

@@ -1,18 +1,10 @@
-// import * as eva from "@eva-design/eva";
-// import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
-// import { EvaIconsPack } from "@ui-kitten/eva-icons";
-// import * as SplashScreen from "expo-splash-screen";
+import React, { useState, useEffect } from 'react';
 import { StoreProvider } from "easy-peasy";
-import { StyleSheet, Text, View } from "react-native";
-import { useState, useEffect } from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { View } from "react-native";
 
 import AppNavigator from "./app/tabs/app.navigator";
 import store from "./app/util/token.store";
 import { initI18n } from "./app/translation/i18n";
-
-
-// SplashScreen.preventAutoHideAsync();
 
 function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -20,14 +12,7 @@ function App() {
   useEffect(() => {
     console.log("App: Starting initialization...");
     
-    // Set a very short delay to ensure splash screen shows briefly, then start app
-    const startApp = () => {
-      console.log("App: Setting app as ready");
-      setAppIsReady(true);
-    };
-
-    // Initialize i18n in background without blocking
-    console.log("App: Starting i18n in background...");
+    // Initialize i18n in background - don't block app startup
     initI18n()
       .then(() => {
         console.log("App: i18n initialized successfully");
@@ -36,8 +21,11 @@ function App() {
         console.error("App: i18n failed, continuing without it:", error);
       });
 
-    // Start app immediately after a minimal delay
-    setTimeout(startApp, 1000);
+    // Start app after minimal delay
+    setTimeout(() => {
+      console.log("App: App is ready");
+      setAppIsReady(true);
+    }, 500);
   }, []);
 
   console.log("App: Render - appIsReady:", appIsReady);
@@ -49,24 +37,12 @@ function App() {
 
   console.log("App: Rendering main app");
   return (
-    <SafeAreaProvider>
+    <View style={{ flex: 1 }}>
       <StoreProvider store={store}>
-        {/* <IconRegistry icons={EvaIconsPack} /> */}
-        {/* <ApplicationProvider {...eva} theme={eva.light}> */}
-          <AppNavigator />
-        {/* </ApplicationProvider> */}
+        <AppNavigator />
       </StoreProvider>
-    </SafeAreaProvider>
+    </View>
   );
 }
 
 export default App;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

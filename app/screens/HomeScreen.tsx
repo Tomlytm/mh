@@ -24,7 +24,7 @@ import colors from "../config/colors";
 import ApiService from "../config/services";
 import { orderInformation } from "../util/app.interface";
 import { useStoreState } from "../util/token.store";
-import LottieView from "lottie-react-native";
+import LottieView from "../components/LottieViewMock";
 import { useTranslation } from "react-i18next";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
@@ -274,7 +274,7 @@ export default function HomeScreen(props: HomeScreenProps) {
                 </View>
               )}
               <TouchableWithoutFeedback
-                onPress={() => props.navigation.navigate(t("screens.navigator.trips"))}
+                onPress={() => props.navigation.navigate("TripsTab")}
               >
                 <View style={styles.seeAllTripsContainer}>
                   <View style={styles.seeAllTripsContent}>

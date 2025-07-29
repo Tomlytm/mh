@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import * as Haptics from "expo-haptics";
-import LottieView from "lottie-react-native";
+import LottieView from "../components/LottieViewMock";
 import {
   Keyboard,
   NativeSyntheticEvent,

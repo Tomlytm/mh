@@ -6,7 +6,7 @@ import {
   Animated,
 } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+// import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import HomeScreen from "../screens/HomeScreen";
@@ -71,7 +71,8 @@ const TabIcon = ({ focused, route }: { focused: boolean; route: any }) => {
 
 export default function BottomTab() {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
+  // const insets = useSafeAreaInsets();
+  const insets = { bottom: 0, top: 0, left: 0, right: 0 }; // Temporary fallback
   
   return (
     <Tab.Navigator

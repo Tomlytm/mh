@@ -1,7 +1,7 @@
 import { Text, TextInput, Animated } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import * as Haptics from "expo-haptics";
-import LottieView from "lottie-react-native";
+import LottieView from "../components/LottieViewMock";
 import { useState, useRef } from "react";
 import {
   Keyboard,
