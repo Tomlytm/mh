@@ -44,7 +44,7 @@
       }
     },
     "confirmCodeScreen": {
-      "title": "Confirm Code Screen",
+      "title": "Verification Required",
       "text": {
         "sentEmail": "We have sent you an email with the verification code to",
         "confirmCode": "Confirm Code",
@@ -58,7 +58,8 @@
         "somethingWentWrong": "Something went wrong",
         "success": "Success",
         "otpResent": "OTP has been resent",
-        "noUserProfile": "No user profile attached to rider."
+        "noUserProfile": "No user profile attached to rider.",
+        "enterCode": "Enter the 6-digit code sent to your email"
       }
     },
     "tripsScreen": {

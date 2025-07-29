@@ -1,16 +1,23 @@
-import { Button, Input, Text } from "@ui-kitten/components";
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Keyboard,
   StatusBar,
   StyleSheet,
   View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Animated,
 } from "react-native";
+import * as Haptics from "expo-haptics";
 import Modal from "react-native-modal";
 import Toast from "react-native-toast-message";
-import { TextInput } from "react-native-paper";
+import { LinearGradient } from "expo-linear-gradient";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import ApiService from "../config/services";
 import constants from "../config/constants";
+import colors from "../config/colors";
 import LottieView from "lottie-react-native";
 import { validateEmail } from "../util/helpers";
 import { useTranslation } from "react-i18next";
@@ -24,15 +31,26 @@ function ForgotPasswordScreen(props: ForgotPasswordScreenProps) {
   const [verificationCode, setVerificationCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
-  const [inputStyle, setInputSTyle] = useState(styles.input);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const { t } = useTranslation();
+  
+  const buttonScale = useRef(new Animated.Value(1)).current;
+  const emailBorderColor = useRef(new Animated.Value(0)).current;
 
   const resetPasswordOTPRequest = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    
     if (email == "") {
-      setInputSTyle({ ...styles.input, borderColor: "red" });
+      Animated.timing(emailBorderColor, {
+        toValue: 2, // Error state
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
       return;
     }
 
@@ -45,14 +63,17 @@ function ForgotPasswordScreen(props: ForgotPasswordScreenProps) {
         text2: "Please enter a valid email",
       });
     } else {
-      // valid email
       setIsLoading(true);
-
       const response = await ApiService.forgotPasswordOTPRequest(cleanedEmail);
       setIsLoading(false);
 
       if (response.status === true) {
         setShowModal(true);
+        Toast.show({
+          type: "success",
+          text1: "Code Sent",
+          text2: `Verification code sent to ${cleanedEmail}`,
+        });
       } else {
         Toast.show({
           type: "error",
@@ -62,6 +83,45 @@ function ForgotPasswordScreen(props: ForgotPasswordScreenProps) {
       }
     }
   };
+
+  const handleEmailFocus = () => {
+    setEmailFocused(true);
+    Animated.timing(emailBorderColor, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const handleEmailBlur = () => {
+    setEmailFocused(false);
+    Animated.timing(emailBorderColor, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const handleButtonPressIn = () => {
+    Animated.spring(buttonScale, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      tension: 300,
+    }).start();
+  };
+
+  const handleButtonPressOut = () => {
+    Animated.spring(buttonScale, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 300,
+    }).start();
+  };
+
+  const animatedEmailBorderColor = emailBorderColor.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: [colors.border, colors.primary, colors.error],
+  });
 
   const resetPassword = async () => {
     Keyboard.dismiss();
@@ -108,42 +168,93 @@ function ForgotPasswordScreen(props: ForgotPasswordScreenProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Toast />
-      <View style={styles.loginContainer}>
-        <View style={{ marginBottom: 20 }}>
-          <Text style={styles.labelText}>
-            {t("screens.forgotPassword.text.provideEmail")}
-          </Text>
-        </View>
-        <Input
-          value={email}
-          autoCapitalize="none"
-          onChangeText={(nextValue) => {
-            setInputSTyle({ ...styles.input, borderColor: "#D5D5D5" });
-            setEmail(nextValue);
-          }}
-          style={inputStyle}
-          placeholder={t("screens.forgotPassword.text.emailAddress")}
-        />
-        <Button style={styles.button} onPress={resetPasswordOTPRequest}>
-          {t("screens.forgotPassword.text.resetPassword")}
-        </Button>
-        {isLoading && (
-          <LottieView
-            style={{
-              alignSelf: "center",
-              width: 72,
-              height: 72,
-            }}
-            source={constants.LOADING_TWO}
-            autoPlay
+      <LinearGradient
+        colors={[colors.primary + "10", colors.support]}
+        style={styles.headerSection}
+      >
+        <View style={styles.iconContainer}>
+          <MaterialCommunityIcons
+            name="lock-reset"
+            size={64}
+            color={colors.primary}
           />
+        </View>
+        <Text style={styles.title}>Reset Password</Text>
+        <Text style={styles.subtitle}>
+          {t("screens.forgotPassword.text.provideEmail")}
+        </Text>
+      </LinearGradient>
+
+      <View style={styles.contentSection}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Email Address</Text>
+          <Animated.View
+            style={[
+              styles.inputWrapper,
+              { borderColor: animatedEmailBorderColor },
+            ]}
+          >
+            <MaterialCommunityIcons
+              name="email-outline"
+              size={20}
+              color={emailFocused ? colors.primary : colors.textLight}
+              style={styles.inputIcon}
+            />
+            <TextInput
+              value={email}
+              style={styles.input}
+              placeholder={t("screens.forgotPassword.text.emailAddress")}
+              placeholderTextColor={colors.textLight}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              onChangeText={(nextValue) => {
+                Animated.timing(emailBorderColor, {
+                  toValue: 0,
+                  duration: 200,
+                  useNativeDriver: false,
+                }).start();
+                setEmail(nextValue);
+              }}
+              onFocus={handleEmailFocus}
+              onBlur={handleEmailBlur}
+            />
+          </Animated.View>
+        </View>
+
+        <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+          <TouchableOpacity
+            disabled={isLoading}
+            onPress={resetPasswordOTPRequest}
+            onPressIn={handleButtonPressIn}
+            onPressOut={handleButtonPressOut}
+            activeOpacity={0.9}
+          >
+            <LinearGradient
+              colors={colors.gradient.primary}
+              style={[styles.button, { opacity: isLoading ? 0.7 : 1 }]}
+            >
+              <Text style={styles.buttonText}>
+                {t("screens.forgotPassword.text.resetPassword")}
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </Animated.View>
+
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <LottieView
+              style={styles.loadingAnimation}
+              source={constants.LOADING_TWO}
+              autoPlay
+            />
+          </View>
         )}
       </View>
       <Modal
-        backdropOpacity={0.15}
-        style={{ margin: 0, flex: 1, justifyContent: "flex-end" }}
+        backdropOpacity={0.3}
+        style={styles.modal}
         isVisible={showModal}
         avoidKeyboard={true}
         swipeDirection="down"
@@ -155,139 +266,319 @@ function ForgotPasswordScreen(props: ForgotPasswordScreenProps) {
           setNewPasswordAgain("");
         }}
       >
-        {/* <> */}
-        <Toast />
-        <View style={styles.passwordResetModalContainer}>
-          <View style={styles.line} />
-          <Text style={{ fontSize: 21, fontWeight: "700", marginBottom: 20 }}>
+        <View style={styles.modalContainer}>
+          <Toast />
+          <View style={styles.dragHandle} />
+          <Text style={styles.modalTitle}>
             {t("screens.forgotPassword.text.resetPassword")}
           </Text>
-          <TextInput
-            style={styles.input}
-            dense={true}
-            mode="outlined"
-            label={t("screens.forgotPassword.text.verificationCode")}
-            value={verificationCode}
-            placeholder={t(
-              "screens.forgotPassword.text.verificationCodePlaceholder"
-            )}
-            onChangeText={(text) => setVerificationCode(text)}
-          />
-          <TextInput
-            style={styles.input}
-            mode="outlined"
-            label={t("screens.forgotPassword.text.newPassword")}
-            value={newPassword}
-            secureTextEntry={true}
-            placeholder={t(
-              "screens.forgotPassword.text.newPasswordPlaceholder"
-            )}
-            onChangeText={(text) => setNewPassword(text)}
-          />
-          <TextInput
-            style={styles.input}
-            mode="outlined"
-            label={t("screens.forgotPassword.text.confirmNewPassword")}
-            value={newPasswordAgain}
-            secureTextEntry={true}
-            placeholder={t(
-              "screens.forgotPassword.text.confirmNewPasswordPlaceholder"
-            )}
-            onChangeText={(text) => setNewPasswordAgain(text)}
-          />
-          {modalLoading && (
-            <LottieView
-              style={{
-                alignSelf: "center",
-                width: 72,
-                height: 72,
-              }}
-              source={constants.LOADING_TWO}
-              autoPlay
-            />
-          )}
-          <Button style={styles.acceptButton} onPress={resetPassword}>
-            {(evaProps: any) => (
-              <Text
-                {...evaProps}
-                style={{ fontWeight: "700", fontSize: 14, color: "#F5F5F5" }}
-              >
-                {t("screens.forgotPassword.text.changePassword")}
+          
+          <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
+            <View style={styles.modalInputContainer}>
+              <Text style={styles.modalInputLabel}>
+                {t("screens.forgotPassword.text.verificationCode")}
               </Text>
+              <View style={styles.modalInputWrapper}>
+                <MaterialCommunityIcons
+                  name="email-outline"
+                  size={20}
+                  color={colors.textLight}
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  style={styles.modalInput}
+                  value={verificationCode}
+                  placeholder={t(
+                    "screens.forgotPassword.text.verificationCodePlaceholder"
+                  )}
+                  placeholderTextColor={colors.textLight}
+                  onChangeText={(text) => setVerificationCode(text)}
+                />
+              </View>
+            </View>
+
+            <View style={styles.modalInputContainer}>
+              <Text style={styles.modalInputLabel}>
+                {t("screens.forgotPassword.text.newPassword")}
+              </Text>
+              <View style={styles.modalInputWrapper}>
+                <MaterialCommunityIcons
+                  name="lock-outline"
+                  size={20}
+                  color={colors.textLight}
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  style={styles.modalInput}
+                  value={newPassword}
+                  secureTextEntry={!showNewPassword}
+                  placeholder={t(
+                    "screens.forgotPassword.text.newPasswordPlaceholder"
+                  )}
+                  placeholderTextColor={colors.textLight}
+                  onChangeText={(text) => setNewPassword(text)}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowNewPassword(!showNewPassword)}
+                  style={styles.eyeButton}
+                >
+                  <MaterialCommunityIcons
+                    name={showNewPassword ? "eye-off" : "eye"}
+                    size={20}
+                    color={colors.textLight}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.modalInputContainer}>
+              <Text style={styles.modalInputLabel}>
+                {t("screens.forgotPassword.text.confirmNewPassword")}
+              </Text>
+              <View style={styles.modalInputWrapper}>
+                <MaterialCommunityIcons
+                  name="lock-check-outline"
+                  size={20}
+                  color={colors.textLight}
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  style={styles.modalInput}
+                  value={newPasswordAgain}
+                  secureTextEntry={!showConfirmPassword}
+                  placeholder={t(
+                    "screens.forgotPassword.text.confirmNewPasswordPlaceholder"
+                  )}
+                  placeholderTextColor={colors.textLight}
+                  onChangeText={(text) => setNewPasswordAgain(text)}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  style={styles.eyeButton}
+                >
+                  <MaterialCommunityIcons
+                    name={showConfirmPassword ? "eye-off" : "eye"}
+                    size={20}
+                    color={colors.textLight}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {modalLoading && (
+              <View style={styles.loadingContainer}>
+                <LottieView
+                  style={styles.loadingAnimation}
+                  source={constants.LOADING_TWO}
+                  autoPlay
+                />
+              </View>
             )}
-          </Button>
+
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={resetPassword}
+              disabled={modalLoading}
+              activeOpacity={0.8}
+            >
+              <LinearGradient
+                colors={colors.gradient.primary}
+                style={styles.modalButtonGradient}
+              >
+                <Text style={styles.modalButtonText}>
+                  {t("screens.forgotPassword.text.changePassword")}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
-        {/* </> */}
       </Modal>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  acceptButton: {
-    borderRadius: 16,
-    borderWidth: 0,
-    width: 225,
-    height: 40,
-    alignSelf: "center",
-    justifyContent: "center",
-    backgroundColor: "#E60000",
-  },
-  button: {
-    borderRadius: 100,
-    borderWidth: 0,
-    width: "100%",
-    height: 55,
-    backgroundColor: "#E60000",
-    marginBottom: 30,
-  },
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: colors.support,
+  },
+  headerSection: {
+    paddingTop: 60,
+    paddingBottom: 40,
+    paddingHorizontal: 20,
     alignItems: "center",
-    paddingTop: StatusBar.currentHeight,
   },
-  icon: {
-    width: 32,
-    height: 32,
-  },
-  input: {
-    width: "100%",
-    height: 55,
+  iconContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: colors.secondary,
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 24,
-    borderColor: "#D5D5D5",
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
   },
-  line: {
-    alignSelf: "center",
-    width: 45,
-    height: 5,
-    backgroundColor: "#D5D5D5",
-    marginVertical: 10,
-    borderRadius: 16,
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.text,
+    marginBottom: 12,
+    textAlign: "center",
   },
-  loginContainer: {
-    width: "84%",
-    marginTop: "36%",
-    // alignItems: 'center',
-  },
-  labelText: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#616161",
-    lineHeight: 26.4,
-  },
-  text: {
+  subtitle: {
     fontSize: 16,
     fontWeight: "400",
-    color: "#616161",
+    fontFamily: "Inter",
+    color: colors.textLight,
+    textAlign: "center",
+    lineHeight: 24,
   },
-  passwordResetModalContainer: {
-    width: "auto",
-    height: 420,
-    padding: 12,
-    backgroundColor: "#FFF",
-    paddingTop: 12,
-    borderRadius: 16,
+  contentSection: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 32,
+  },
+  inputContainer: {
+    marginBottom: 24,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: "Inter",
+    color: colors.text,
+    marginBottom: 8,
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.secondary,
+    borderRadius: 12,
+    borderWidth: 2,
+    paddingHorizontal: 16,
+    height: 56,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  inputIcon: {
+    marginRight: 12,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: "Inter",
+    color: colors.text,
+    paddingVertical: 0,
+  },
+  button: {
+    height: 56,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 32,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.secondary,
+  },
+  loadingContainer: {
+    alignItems: "center",
+    marginTop: 20,
+  },
+  loadingAnimation: {
+    width: 60,
+    height: 60,
+  },
+  modal: {
+    margin: 0,
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  modalContainer: {
+    backgroundColor: colors.secondary,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: "80%",
+  },
+  dragHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: colors.border,
+    borderRadius: 2,
+    alignSelf: "center",
+    marginTop: 12,
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.text,
+    textAlign: "center",
+    marginBottom: 24,
+    paddingHorizontal: 20,
+  },
+  modalContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 32,
+  },
+  modalInputContainer: {
+    marginBottom: 20,
+  },
+  modalInputLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: "Inter",
+    color: colors.text,
+    marginBottom: 8,
+  },
+  modalInputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.support,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: 16,
+  },
+  modalInput: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: "Inter",
+    color: colors.text,
+    paddingVertical: 16,
+  },
+  eyeButton: {
+    padding: 4,
+  },
+  modalButton: {
+    marginTop: 24,
+  },
+  modalButtonGradient: {
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.secondary,
   },
 });
 export default ForgotPasswordScreen;

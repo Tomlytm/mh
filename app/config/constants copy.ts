@@ -1,5 +1,5 @@
 import * as SecureStore from "expo-secure-store";
-//https://shop-preprod.bluechiptech.biz/rbac/api/userDetail/modified-sign-in
+
 const BACKEND_API = {
   BASE_URL_RBAC: `https://api-grandmarche.m-pesa.vodacom.cd/rbac/`,
   LOGIN: `api/userDetail/rider-sign-in`,

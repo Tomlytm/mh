@@ -21,6 +21,10 @@ class ApiService {
         email: user?.riderEmail,
         password: user?.riderPassword,
       };
+      console.log("API Service - Request body being sent:", requestBody);
+      console.log("API Service - Request URL:", constants.BACKEND_API.LOGIN);
+      console.log("API Service - Base URL:", constants.BACKEND_API.BASE_URL_RBAC);
+      
       let response = await ApiRbac.post(
         constants.BACKEND_API.LOGIN,
         requestBody

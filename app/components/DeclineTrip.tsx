@@ -1,6 +1,8 @@
-import { StyleSheet, View, Image } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Animated } from "react-native";
 import React from "react";
-import { Button, Text, Icon } from "@ui-kitten/components";
+import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import colors from "../config/colors";
 import { useTranslation } from "react-i18next";
 
@@ -10,69 +12,177 @@ interface DeclineTripProps {
 }
 
 export default function DeclineTrip(props: DeclineTripProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const confirmScale = React.useRef(new Animated.Value(1)).current;
+  const dismissScale = React.useRef(new Animated.Value(1)).current;
+
+  const handleConfirmPressIn = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Animated.spring(confirmScale, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      tension: 300,
+    }).start();
+  };
+
+  const handleConfirmPressOut = () => {
+    Animated.spring(confirmScale, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 300,
+    }).start();
+  };
+
+  const handleDismissPressIn = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Animated.spring(dismissScale, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      tension: 300,
+    }).start();
+  };
+
+  const handleDismissPressOut = () => {
+    Animated.spring(dismissScale, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 300,
+    }).start();
+  };
   return (
     <View style={styles.container}>
-      <Image
-        style={{ marginBottom: 16 }}
-        source={require("../assets/DeclineImage.png")}
-      />
-      <Text style={styles.decline}>{t("components.declineTrip.title")}</Text>
-      <Text style={styles.confirmText}>
-        {t("components.declineTrip.confirmationText")}
-      </Text>
-      <Button style={styles.confirmButton} onPress={props.confirmButton}>
-        {t("components.declineTrip.confirmButton")}
-      </Button>
-      <Button style={styles.dismissButton} onPress={props.dismissButton}>
-        {(evaProps:any) => (
-          <Text
-            {...evaProps}
-            style={{ color: "#616161", fontWeight: "700", fontSize: 14 }}
-          >
-            {t("components.declineTrip.dismissButton")}
-          </Text>
-        )}
-      </Button>
+      <LinearGradient
+        colors={[colors.secondary, colors.support]}
+        style={styles.gradient}
+      >
+        <View style={styles.iconContainer}>
+          <MaterialCommunityIcons
+            name="alert-circle"
+            size={80}
+            color={colors.warning}
+          />
+        </View>
+        
+        <Text style={styles.title}>
+          {t("components.declineTrip.title")}
+        </Text>
+        
+        <Text style={styles.message}>
+          {t("components.declineTrip.confirmationText")}
+        </Text>
+        
+        <View style={styles.buttonContainer}>
+          <Animated.View style={[{ transform: [{ scale: confirmScale }] }, styles.buttonWrapper]}>
+            <TouchableOpacity
+              onPress={props.confirmButton}
+              onPressIn={handleConfirmPressIn}
+              onPressOut={handleConfirmPressOut}
+              activeOpacity={0.8}
+            >
+              <LinearGradient
+                colors={colors.gradient.primary}
+                style={styles.confirmButton}
+              >
+                <Text style={styles.confirmButtonText}>
+                  {t("components.declineTrip.confirmButton")}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </Animated.View>
+          
+          <Animated.View style={[{ transform: [{ scale: dismissScale }] }, styles.buttonWrapper]}>
+            <TouchableOpacity
+              style={styles.dismissButton}
+              onPress={props.dismissButton}
+              onPressIn={handleDismissPressIn}
+              onPressOut={handleDismissPressOut}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.dismissButtonText}>
+                {t("components.declineTrip.dismissButton")}
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      </LinearGradient>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  confirmButton: {
-    width: 225,
-    height: 39,
-    borderRadius: 16,
-    backgroundColor: colors.primary,
-    borderWidth: 0,
-    marginVertical: 10,
-  },
-  confirmText: {
-    fontSize: 18,
-    fontWeight: "400",
-    textAlign: "center",
-    lineHeight: 26.4,
-  },
   container: {
-    width: "auto",
-    // height: 420,
-    backgroundColor: "#FFF",
+    borderRadius: 20,
+    overflow: "hidden",
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 10,
+  },
+  gradient: {
+    paddingHorizontal: 32,
+    paddingVertical: 40,
     alignItems: "center",
     justifyContent: "center",
-    padding: 16,
-    borderRadius: 16,
+    minHeight: 360,
   },
-  decline: {
+  iconContainer: {
+    marginBottom: 24,
+  },
+  title: {
     fontSize: 24,
     fontWeight: "700",
-    marginBottom: 10,
+    fontFamily: "Inter",
+    color: colors.text,
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  message: {
+    fontSize: 16,
+    fontWeight: "400",
+    fontFamily: "Inter",
+    color: colors.textLight,
+    textAlign: "center",
+    lineHeight: 24,
+    marginBottom: 32,
+  },
+  buttonContainer: {
+    width: "100%",
+    gap: 12,
+  },
+  buttonWrapper: {
+    width: "100%",
+  },
+  confirmButton: {
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  confirmButtonText: {
+    fontSize: 16,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.secondary,
   },
   dismissButton: {
-    width: 225,
-    height: 39,
-    borderRadius: 16,
-    backgroundColor: "#D5D5D5",
-    borderWidth: 0,
-    marginVertical: 10,
+    backgroundColor: colors.support,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingVertical: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dismissButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    fontFamily: "Inter",
+    color: colors.text,
   },
 });

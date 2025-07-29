@@ -1,178 +1,306 @@
-import { Icon } from "@ui-kitten/components";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import colors from "../config/colors";
 interface DeliveredOrderDetailProps {
   modalData: any;
 }
 
 export default function DeliveredOrderDetail(props: DeliveredOrderDetailProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  
   return (
     <View style={styles.container}>
-      <View style={styles.line} />
-      <Text style={{ fontSize: 16, fontWeight: "700", paddingVertical: 6 }}>
-        {t("components.deliveredOrderDetail.title")}
-      </Text>
-      <View style={{ width: "100%", paddingTop: 10 }}>
-        <View style={styles.tripHeader}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <View
-              style={{
-                height: 36,
-                width: 36,
-                backgroundColor: "#E60000",
-                borderRadius: 6,
-                marginRight: 5,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  textTransform: "uppercase",
-                  fontSize: 16,
-                  color: "#fff",
-                }}
-              >
-                {props.modalData.customerFirstName.charAt(0)}{" "}
-                {props.modalData.customerLastName.charAt(0)}
-              </Text>
-            </View>
-            <View style={{ paddingLeft: 5 }}>
-              <Text style={{ fontSize: 16, fontWeight: "700" }}>
-                {props.modalData.customerFirstName}{" "}
-                {props.modalData.customerLastName}
-              </Text>
-              <Text style={{ color: "#757575" }}>
-                {props.modalData.customerPhoneNumber}
-              </Text>
-            </View>
+      <View style={styles.dragHandle} />
+      
+      <View style={styles.header}>
+        <View style={styles.statusBadge}>
+          <MaterialCommunityIcons
+            name="check-circle"
+            size={16}
+            color={colors.success}
+          />
+          <Text style={styles.statusText}>
+            {t("components.deliveredOrderDetail.title")}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.customerSection}>
+        <LinearGradient
+          colors={colors.gradient.primary}
+          style={styles.customerAvatar}
+        >
+          <Text style={styles.avatarText}>
+            {props.modalData?.customerFirstName?.charAt(0) || ""}
+            {props.modalData?.customerLastName?.charAt(0) || ""}
+          </Text>
+        </LinearGradient>
+        <View style={styles.customerInfo}>
+          <Text style={styles.customerName}>
+            {props.modalData?.customerFirstName} {props.modalData?.customerLastName}
+          </Text>
+          <View style={styles.phoneContainer}>
+            <MaterialCommunityIcons
+              name="phone"
+              size={16}
+              color={colors.textLight}
+            />
+            <Text style={styles.customerPhone}>
+              {props.modalData?.customerPhoneNumber}
+            </Text>
           </View>
         </View>
-        <View style={styles.orderContainer}>
-          <View style={{ width: "50%" }}>
-            <Text style={styles.textTitle}>
+      </View>
+
+      <View style={styles.orderSection}>
+        <View style={styles.orderCard}>
+          <View style={styles.orderItem}>
+            <Text style={styles.orderLabel}>
               {t("components.deliveredOrderDetail.orderNumber")}
             </Text>
-            <Text style={{ fontSize: 16, fontWeight: "400" }}>
-              {props.modalData.orderDetailId}
+            <Text style={styles.orderValue}>
+              #{props.modalData?.orderDetailId}
             </Text>
           </View>
-          <View style={{ width: "50%" }}>
-            <Text style={styles.textTitle}>
+          <View style={styles.divider} />
+          <View style={styles.orderItem}>
+            <Text style={styles.orderLabel}>
               {t("components.deliveredOrderDetail.orderItems")}
             </Text>
-            <View style={{ marginTop: 8 }}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: "700",
-                  flexShrink: 1,
-                }}
-                numberOfLines={2}
-                ellipsizeMode="tail"
-              >
-                {props.modalData.orderName}
-              </Text>
-              <Text
-                style={{
-                  color: "#757575",
-                  marginTop: 8,
-                  paddingRight: 16,
-                }}
-              >
-                {t("components.deliveredOrderDetail.orderQuantity")}:{" "}
-                {props.modalData.orderQuantity}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View style={styles.addressContainer}><MaterialCommunityIcons
-  name="map-marker-outline"
-  size={24}
-  color="#757575"
-  style={styles.icon}
-/>
-
-
-
-          <View style={{ paddingLeft: 12, width: "80%" }}>
-            <Text style={styles.textTitle}>
-              {t("components.deliveredOrderDetail.address")}
+            <Text style={styles.orderItemName} numberOfLines={2}>
+              {props.modalData?.orderName}
             </Text>
-            <Text
-              style={{ fontSize: 14, fontWeight: "400" }}
-              numberOfLines={2}
-              ellipsizeMode="tail"
-            >
-              {props.modalData.customerAddress}
+            <Text style={styles.orderQuantity}>
+              {t("components.deliveredOrderDetail.orderQuantity")}: {props.modalData?.orderQuantity}
             </Text>
           </View>
         </View>
+      </View>
+
+      <View style={styles.addressSection}>
+        <View style={styles.addressHeader}>
+          <MaterialCommunityIcons
+            name="map-marker"
+            size={20}
+            color={colors.primary}
+          />
+          <Text style={styles.addressLabel}>
+            {t("components.deliveredOrderDetail.address")}
+          </Text>
+        </View>
+        <Text style={styles.addressText} numberOfLines={3}>
+          {props.modalData?.customerAddress}
+        </Text>
+      </View>
+
+      <View style={styles.completionBadge}>
+        <MaterialCommunityIcons
+          name="truck-check"
+          size={24}
+          color={colors.success}
+        />
+        <Text style={styles.completionText}>
+          Order successfully delivered!
+        </Text>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  addressContainer: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 10,
-  },
   container: {
-    width: "auto",
-    backgroundColor: "#FFF",
+    backgroundColor: colors.secondary,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 12,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  dragHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: colors.border,
+    borderRadius: 2,
+    alignSelf: "center",
+    marginBottom: 24,
+  },
+  header: {
     alignItems: "center",
-    padding: 12,
-    borderRadius: 16,
+    marginBottom: 24,
   },
-  deliveredText: {
-    backgroundColor: "#E1FFF2",
-    width: 117,
-    height: 38,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  icon: {
-    width: 20,
-    height: 20,
-    fontWeight: "700",
-  },
-  line: {
-    width: 45,
-    height: 5,
-    backgroundColor: "#D5D5D5",
-    marginBottom: 2,
-  },
-  orderContainer: {
-    justifyContent: "center",
-    backgroundColor: "#F5F5F5",
-    marginTop: 10,
-    padding: 10,
+  statusBadge: {
     flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.success + "15",
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: colors.success + "40",
+  },
+  statusText: {
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: "Inter",
+    color: colors.success,
+    marginLeft: 8,
+  },
+  customerSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.support,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 20,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  customerAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 16,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  avatarText: {
+    fontSize: 20,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.secondary,
+  },
+  customerInfo: {
+    flex: 1,
+  },
+  customerName: {
+    fontSize: 18,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.text,
+    marginBottom: 6,
+  },
+  phoneContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  customerPhone: {
+    fontSize: 14,
+    fontWeight: "400",
+    fontFamily: "Inter",
+    color: colors.textLight,
+    marginLeft: 6,
+  },
+  orderSection: {
     marginBottom: 20,
   },
-  tripFooter: {
+  orderCard: {
+    backgroundColor: colors.support,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  orderItem: {
+    marginBottom: 12,
+  },
+  orderLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: "Inter",
+    color: colors.textLight,
+    marginBottom: 6,
+  },
+  orderValue: {
+    fontSize: 16,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.primary,
+  },
+  orderItemName: {
+    fontSize: 16,
+    fontWeight: "600",
+    fontFamily: "Inter",
+    color: colors.text,
+    lineHeight: 22,
+    marginBottom: 4,
+  },
+  orderQuantity: {
+    fontSize: 14,
+    fontWeight: "400",
+    fontFamily: "Inter",
+    color: colors.textLight,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginVertical: 12,
+  },
+  addressSection: {
+    backgroundColor: colors.support,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 20,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  addressHeader: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    borderTopWidth: 1,
-    borderTopColor: "#FFF3F3",
+    marginBottom: 12,
   },
-
-  tripHeader: {
+  addressLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    fontFamily: "Inter",
+    color: colors.text,
+    marginLeft: 8,
+  },
+  addressText: {
+    fontSize: 14,
+    fontWeight: "400",
+    fontFamily: "Inter",
+    color: colors.textLight,
+    lineHeight: 20,
+    paddingLeft: 28,
+  },
+  completionBadge: {
     flexDirection: "row",
     alignItems: "center",
-    paddingTop: 10,
-    justifyContent: "space-between",
-    borderTopWidth: 1,
-    borderTopColor: "#FFF3F3",
+    justifyContent: "center",
+    backgroundColor: colors.success + "15",
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderColor: colors.success + "40",
   },
-  textTitle: { fontSize: 14, fontWeight: "700", color: "#959595" },
+  completionText: {
+    fontSize: 16,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.success,
+    marginLeft: 12,
+  },
 });

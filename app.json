@@ -9,10 +9,12 @@
     "newArchEnabled": true,
     "splash": {
       "image": "./app/assets/LRMSplashScreen.png",
-      "resizeMode": "cover",
+      "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "updates": {
       "enabled": false
     },
@@ -21,7 +23,7 @@
     },
     "android": {
       "softwareKeyboardLayoutMode": "resize",
-      "enableProguardInReleaseBuilds": false,
+   
       "adaptiveIcon": {
         "foregroundImage": "./app/assets/market-hub-adaptive.png",
         "backgroundColor": "#ffffff"
@@ -32,11 +34,14 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-secure-store"],
+    "plugins": [
+      "expo-secure-store"
+    ],
     "extra": {
       "eas": {
-        "projectId": "5a732f3d-e702-40f8-87fd-392250261155"
+        "projectId": "ea3b119e-5a39-45e8-9ef9-fc72b2e0cf63"
       }
-    }
+    },
+    "owner": "lekan4real07"
   }
 }

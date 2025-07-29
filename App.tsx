@@ -5,6 +5,7 @@
 import { StoreProvider } from "easy-peasy";
 import { StyleSheet } from "react-native";
 import { useState, useEffect } from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import AppNavigator from "./app/tabs/app.navigator";
 import store from "./app/util/token.store";
@@ -37,12 +38,14 @@ function App() {
   }
 
   return (
-    <StoreProvider store={store}>
-      {/* <IconRegistry icons={EvaIconsPack} /> */}
-      {/* <ApplicationProvider {...eva} theme={eva.light}> */}
-        <AppNavigator />
-      {/* </ApplicationProvider> */}
-    </StoreProvider>
+    <SafeAreaProvider>
+      <StoreProvider store={store}>
+        {/* <IconRegistry icons={EvaIconsPack} /> */}
+        {/* <ApplicationProvider {...eva} theme={eva.light}> */}
+          <AppNavigator />
+        {/* </ApplicationProvider> */}
+      </StoreProvider>
+    </SafeAreaProvider>
   );
 }
 

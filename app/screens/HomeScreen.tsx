@@ -1,5 +1,4 @@
 import { useFocusEffect } from "@react-navigation/native";
-// import { Icon } from "@ui-kitten/components";
 import React, { SetStateAction, useCallback, useState } from "react";
 import {
   Dimensions,
@@ -19,7 +18,9 @@ import DeclineTrip from "../components/DeclineTrip";
 import NewOrderDetail from "../components/NewOrderDetail";
 import SingleTrip from "../components/SingleTrip";
 import SingleTripDetailed from "../components/SingleTripDetailed";
+import { TripCardSkeleton, DetailedTripCardSkeleton } from "../components/SkeletonLoader";
 import constants from "../config/constants";
+import colors from "../config/colors";
 import ApiService from "../config/services";
 import { orderInformation } from "../util/app.interface";
 import { useStoreState } from "../util/token.store";
@@ -209,23 +210,14 @@ export default function HomeScreen(props: HomeScreenProps) {
           <ScrollView
             showsVerticalScrollIndicator={false}
             style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
           >
             <View onStartShouldSetResponder={() => true}>
-              <Text
-                style={{ fontSize: 16, fontWeight: "700", marginVertical: 14 }}
-              >
+              <Text style={styles.sectionTitle}>
                 {t("screens.homeScreen.text.nextRecommendedTrip")}
               </Text>
               {isLoading && (
-                <LottieView
-                  style={{
-                    alignSelf: "center",
-                    width: 72,
-                    height: 72,
-                  }}
-                  source={constants.LOADING_TWO}
-                  autoPlay
-                />
+                <DetailedTripCardSkeleton />
               )}
               {nextRecommended && (
                 <SingleTripDetailed
@@ -237,25 +229,26 @@ export default function HomeScreen(props: HomeScreenProps) {
                 />
               )}
               {noNextRecommended && (
-                <Text>
-                  {t("screens.homeScreen.text.noNextRecommendedTrip")}
-                </Text>
+                <View style={styles.emptyStateContainer}>
+                  <MaterialCommunityIcons 
+                    name="package-variant" 
+                    size={48} 
+                    color={colors.textLight} 
+                  />
+                  <Text style={styles.emptyStateText}>
+                    {t("screens.homeScreen.text.noNextRecommendedTrip")}
+                  </Text>
+                </View>
               )}
-              <Text
-                style={{ fontSize: 16, fontWeight: "700", marginVertical: 14 }}
-              >
+              <Text style={styles.sectionTitle}>
                 {t("screens.homeScreen.text.newlyAssignedTrips")}
               </Text>
               {isLoading && (
-                <LottieView
-                  style={{
-                    alignSelf: "center",
-                    width: 72,
-                    height: 72,
-                  }}
-                  source={constants.LOADING_TWO}
-                  autoPlay
-                />
+                <>
+                  <TripCardSkeleton />
+                  <TripCardSkeleton />
+                  <TripCardSkeleton />
+                </>
               )}
               {newlyAssigned.length > 0 &&
                 newlyAssigned.map((trip) => (
@@ -269,29 +262,39 @@ export default function HomeScreen(props: HomeScreenProps) {
                   />
                 ))}
               {noNewlyAssigned && (
-                <Text>{t("screens.homeScreen.text.noNewlyAssignedTrips")}</Text>
+                <View style={styles.emptyStateContainer}>
+                  <MaterialCommunityIcons 
+                    name="truck-delivery" 
+                    size={48} 
+                    color={colors.textLight} 
+                  />
+                  <Text style={styles.emptyStateText}>
+                    {t("screens.homeScreen.text.noNewlyAssignedTrips")}
+                  </Text>
+                </View>
               )}
-              <View
-                style={{
-                  flexDirection: "row",
-                  marginVertical: 12,
-                  alignItems: "center",
-                }}
-              ><MaterialCommunityIcons
-                  name="arrow-right-circle"
-                  size={24}
-                  color="#E60000"
-                  style={{ marginRight: 12 }}
-                />
-
-
-                <Text
-                  style={{ fontSize: 16, fontWeight: "700" }}
-                  onPress={() => props.navigation.navigate("Trips")}
-                >
-                  {t("screens.homeScreen.text.seeAllTrips")}
-                </Text>
-              </View>
+              <TouchableWithoutFeedback
+                onPress={() => props.navigation.navigate(t("screens.navigator.trips"))}
+              >
+                <View style={styles.seeAllTripsContainer}>
+                  <View style={styles.seeAllTripsContent}>
+                    <MaterialCommunityIcons
+                      name="arrow-right-circle"
+                      size={20}
+                      color={colors.primary}
+                      style={{ marginRight: 8 }}
+                    />
+                    <Text style={styles.seeAllTripsText}>
+                      {t("screens.homeScreen.text.seeAllTrips")}
+                    </Text>
+                  </View>
+                  <MaterialCommunityIcons
+                    name="chevron-right"
+                    size={20}
+                    color={colors.textLight}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
             </View>
           </ScrollView>
         </View>
@@ -366,377 +369,63 @@ export default function HomeScreen(props: HomeScreenProps) {
 
 const styles = StyleSheet.create({
   container: {
-    width: "92%",
-    backgroundColor: "#F5F5F5",
-    marginHorizontal: "4%",
-  },
-  icon: {
-    width: 32,
-    height: 32,
-  },
-  input: {
-    width: "100%",
-    height: 55,
-    marginTop: 16,
+    flex: 1,
+    backgroundColor: colors.support,
+    paddingHorizontal: 16,
   },
   scrollView: {
-    height: "68%",
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.text,
+    marginVertical: 16,
+    marginTop: 24,
+  },
+  emptyStateContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+    backgroundColor: colors.secondary,
+    borderRadius: 16,
+    marginVertical: 8,
+  },
+  emptyStateText: {
+    fontSize: 14,
+    fontWeight: "500",
+    fontFamily: "Inter",
+    color: colors.textLight,
+    marginTop: 12,
+    textAlign: "center",
+  },
+  seeAllTripsContainer: {
+    backgroundColor: colors.secondary,
+    borderRadius: 12,
+    padding: 16,
+    marginVertical: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  seeAllTripsContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  seeAllTripsText: {
+    fontSize: 16,
+    fontWeight: "600",
+    fontFamily: "Inter",
+    color: colors.text,
   },
 });
 
-/* import { useFocusEffect } from "@react-navigation/native";
-import { Icon } from "@ui-kitten/components";
-import React, { useCallback, useState } from "react";
-import {
-  Dimensions,
-  ImageBackground,
-  Keyboard,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
-import Modal from "react-native-modal";
-import Toast from "react-native-toast-message";
-import AcceptTrip from "../components/AcceptTrip";
-import DeclineTrip from "../components/DeclineTrip";
-import NewOrderDetail from "../components/NewOrderDetail";
-import SingleTrip from "../components/SingleTrip";
-import SingleTripDetailed from "../components/SingleTripDetailed";
-import constants from "../config/constants";
-import ApiService from "../config/services";
-import { orderInformation } from "../util/app.interface";
-import { useStoreState } from "../util/token.store";
-import LottieView from "lottie-react-native";
-
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-
-interface HomeScreenProps {
-  navigation: any;
-}
-
-export default function HomeScreen(props: HomeScreenProps) {
-  const [nextRecommended, setNextRecommended] = useState<orderInformation>();
-  const [noNextRecommended, setNoNextRecommended] = useState(false);
-  const [noNewlyAssigned, setNoNewlyAssigned] = useState(false);
-  const [newlyAssigned, setNewlyAssigned] = useState<orderInformation[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [acceptLoading, setAcceptLoading] = useState(false);
-  const [declineLoading, setDeclineLoading] = useState(false);
-  const [singleTripmodalVisible, setSingleTripModalVisible] = useState(false);
-  const [modalType, setModalType] = useState<Number>();
-  const [modalData, setModalData] = useState<orderInformation>();
-  const [acceptModalVisible, setAcceptModalVisible] = useState(false);
-  const [declineModalVisible, setDeclineModalVisible] = useState(false);
-  const riderId = useStoreState((state) => state.data.riderProfileId);
-
-  useFocusEffect(
-    useCallback(() => {
-      getHomeScreenData();
-    }, [])
-  );
-
-  const getHomeScreenData = async () => {
-    setIsLoading(true);
-    setNoNextRecommended(false);
-    setNoNewlyAssigned(false);
-
-    try {
-      const [responseNextRecommended, responseNewlyAssigned] =
-        await Promise.all([
-          ApiService.getNextRecommendedTrip(riderId),
-          ApiService.getNewlyAssignedTrips(riderId),
-        ]);
-
-      handleNextRecommendedResponse(responseNextRecommended);
-      handleNewlyAssignedResponse(responseNewlyAssigned);
-    } catch (error) {
-      console.error("Error fetching home screen data:", error);
-    }
-
-    setIsLoading(false);
-  };
-
-  const handleNextRecommendedResponse = (responseNextRecommended: any) => {
-    if (responseNextRecommended === 401) {
-      handleSessionTimeout();
-    } else if (responseNextRecommended !== 400) {
-      setNextRecommended(parseOrderInformation(responseNextRecommended[0]));
-    } else {
-      setNoNextRecommended(true);
-    }
-  };
-
-  const handleNewlyAssignedResponse = (responseNewlyAssigned: any) => {
-    if (responseNewlyAssigned !== 400) {
-      const dataArray = responseNewlyAssigned.map((trip: any) =>
-        parseOrderInformation(trip)
-      );
-      setNewlyAssigned(dataArray);
-    } else {
-      setNoNewlyAssigned(true);
-    }
-  };
-
-  const parseOrderInformation = (data: any) => ({
-    logisticsOrderId: data?.id,
-    orderDetailId: data?.orderId,
-    customerId: data?.customerId,
-    customerFirstName: data?.customerFirstName,
-    customerLastName: data?.customerLastName,
-    customerAddress: data?.deliveryAddress,
-    customerPhoneNumber: data?.customerPhoneNumber,
-    orderPrice: data?.orderPrice,
-    orderName: data?.orderName,
-    orderQuantity: data?.orderQuantity,
-    deliveryDate: data?.deliveryDate,
-  });
-
-  const handleSessionTimeout = () => {
-    props.navigation.navigate("LoginScreen");
-    Toast.show({
-      type: "error",
-      text1: "Session timeout",
-      text2: "Please login again",
-    });
-  };
-
-  const toggleSingleTripModal = (value: Number, data: orderInformation) => {
-    setModalType(value);
-    setModalData(data);
-    setSingleTripModalVisible(!singleTripmodalVisible);
-  };
-
-  const toggleAcceptDismissModal = async (logisticsOrderId: number) => {
-    if (modalType === 1) {
-      // setSingleTripModalVisible(!singleTripmodalVisible);
-      setDeclineModalVisible(!declineModalVisible);
-    } else if (modalType === 2) {
-      setAcceptLoading(!acceptLoading);
-      const response = await ApiService.acceptTrip(logisticsOrderId);
-      // setSingleTripModalVisible(!singleTripmodalVisible);
-      setAcceptLoading(!acceptLoading);
-      if (response === 401) {
-        handleSessionTimeout();
-      } else if (response.id === logisticsOrderId) {
-        setAcceptModalVisible(!acceptModalVisible);
-      }
-    }
-    setModalType(0);
-  };
-
-  const confirmButton = async (logisticsOrderId: number) => {
-    setDeclineLoading(!declineLoading);
-    const response = await ApiService.declineTrip(logisticsOrderId);
-    setDeclineLoading(!declineLoading);
-    if (response === 401) {
-      handleSessionTimeout();
-    } else if (response.id === logisticsOrderId) {
-      setDeclineModalVisible(!declineModalVisible);
-      Toast.show({
-        type: "success",
-        text1: "Trip Declined",
-        text2: "You have successfully declined the trip",
-      });
-      getHomeScreenData();
-    }
-  };
-
-  const dismissButton = () => {
-    setAcceptModalVisible(!acceptModalVisible);
-  };
-
-  const dismissDeclineModal = () => {
-    setDeclineModalVisible(!declineModalVisible);
-  };
-
-  return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={{ flex: 1, width: "auto", height: SCREEN_HEIGHT }}>
-        <StatusBar barStyle={"dark-content"} />
-        <View style={{ width: "auto", height: "32%" }}>
-          <ImageBackground
-            style={{ height: "100%" }}
-            source={require("../assets/HomeImage.png")}
-            resizeMode="cover"
-          >
-            <Toast />
-          </ImageBackground>
-        </View>
-        <View style={styles.container}>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            style={styles.scrollView}
-          >
-            <View onStartShouldSetResponder={() => true}>
-              <Text
-                style={{ fontSize: 16, fontWeight: "700", marginVertical: 14 }}
-              >
-                NEXT RECOMMENDED TRIP
-              </Text>
-              {isLoading ? (
-                <LottieView
-                  style={{
-                    alignSelf: "center",
-                    width: 56,
-                    height: 56,
-                  }}
-                  source={constants.LOADING_TWO}
-                  autoPlay
-                />
-              ) : (
-                <>
-                  {nextRecommended && (
-                    <SingleTripDetailed
-                      data={nextRecommended}
-                      toggleModal={() =>
-                        toggleSingleTripModal(0, nextRecommended)
-                      }
-                    />
-                  )}
-                  {noNextRecommended && <Text>No recommended trip found</Text>}
-                </>
-              )}
-              <Text
-                style={{ fontSize: 16, fontWeight: "700", marginVertical: 14 }}
-              >
-                NEWLY ASSIGNED TRIPS
-              </Text>
-              {isLoading ? (
-                <LottieView
-                  style={{
-                    alignSelf: "center",
-                    width: 56,
-                    height: 56,
-                  }}
-                  source={constants.LOADING_TWO}
-                  autoPlay
-                />
-              ) : (
-                <>
-                  {newlyAssigned.length > 0 &&
-                    newlyAssigned.map((trip) => (
-                      <SingleTrip
-                        key={trip.logisticsOrderId}
-                        data={trip}
-                        toggleModal={() => toggleSingleTripModal(0, trip)}
-                      />
-                    ))}
-                  {noNewlyAssigned && (
-                    <Text>No Newly Assigned trips found</Text>
-                  )}
-                </>
-              )}
-              <View
-                style={{
-                  flexDirection: "row",
-                  marginVertical: 12,
-                  alignItems: "center",
-                }}
-              >
-                <TouchableOpacity
-                  style={{ flexDirection: "row", alignItems: "center" }}
-                  onPress={() => props.navigation.navigate("Trips")}
-                >
-                  <Icon
-                    style={{ width: 24, height: 24, marginRight: 12 }}
-                    fill="#E60000"
-                    name="arrow-circle-right"
-                  />
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "700",
-                      textAlignVertical: "center",
-                    }}
-                  >
-                    SEE ALL TRIPS
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </ScrollView>
-        </View>
-        <Modal
-        backdropOpacity={0.15}
-          style={{ margin: 0, flex: 1, justifyContent: "flex-end" }}
-          isVisible={singleTripmodalVisible}
-          swipeDirection="down"
-          onSwipeComplete={() => setSingleTripModalVisible(false)}
-          onModalHide={() =>
-            toggleAcceptDismissModal(modalData?.logisticsOrderId)
-          }
-        >
-          {acceptLoading && (
-            <LottieView
-              style={{
-                alignSelf: "center",
-                width: 56,
-                height: 56,
-              }}
-              source={constants.LOADING_TWO}
-              autoPlay
-            />
-          )}
-
-          <NewOrderDetail
-            modalData={modalData}
-            toggleAcceptModal={toggleSingleTripModal}
-            toggleDeclineModal={toggleSingleTripModal}
-          />
-        </Modal>
-        <Modal
-          style={{ flex: 1, justifyContent: "flex-end" }}
-          isVisible={acceptModalVisible}
-          onModalHide={getHomeScreenData}
-        >
-          <AcceptTrip dismissModal={dismissButton} />
-        </Modal>
-        <Modal
-          style={{ flex: 1, justifyContent: "flex-end" }}
-          isVisible={declineModalVisible}
-        >
-          {" "}
-          {declineLoading && (
-            <LottieView
-              style={{
-                alignSelf: "center",
-                width: 56,
-                height: 56,
-              }}
-              source={constants.LOADING_TWO}
-              autoPlay
-            />
-          )}
-          <DeclineTrip
-            confirmButton={() => confirmButton(modalData?.logisticsOrderId)}
-            dismissButton={dismissDeclineModal}
-          />
-        </Modal>
-      </View>
-    </TouchableWithoutFeedback>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    width: "92%",
-    backgroundColor: "#F5F5F5",
-    marginHorizontal: "4%",
-  },
-  icon: {
-    width: 32,
-    height: 32,
-  },
-  input: {
-    width: "100%",
-    height: 55,
-    marginTop: 16,
-  },
-  scrollView: {
-    height: "68%",
-  },
-}); */

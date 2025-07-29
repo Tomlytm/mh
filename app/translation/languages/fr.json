@@ -45,7 +45,7 @@
       }
     },
     "confirmCodeScreen": {
-      "title": "Écran de confirmation du code",
+      "title": "Vérification requise",
       "text": {
         "sentEmail": "Nous vous avons envoyé un e-mail avec le code de vérification à",
         "confirmCode": "Confirmer le code",
@@ -59,7 +59,8 @@
         "somethingWentWrong": "Une erreur s'est produite",
         "success": "Succès",
         "otpResent": "L'OTP a été renvoyé",
-        "noUserProfile": "Aucun profil utilisateur attaché au conducteur."
+        "noUserProfile": "Aucun profil utilisateur attaché au conducteur.",
+        "enterCode": "Entrez le code à 6 chiffres envoyé à votre e-mail"
       }
     },
     "tripsScreen": {

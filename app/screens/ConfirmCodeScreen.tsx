@@ -1,7 +1,7 @@
-import { Button, Text } from "@ui-kitten/components";
+import React, { useRef, useState } from "react";
 import * as SecureStore from "expo-secure-store";
+import * as Haptics from "expo-haptics";
 import LottieView from "lottie-react-native";
-import { useRef, useState } from "react";
 import {
   Keyboard,
   NativeSyntheticEvent,
@@ -12,10 +12,15 @@ import {
   TouchableOpacity,
   Vibration,
   View,
+  Text,
+  Animated,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { LinearGradient } from "expo-linear-gradient";
 import Toast from "react-native-toast-message";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import constants from "../config/constants";
+import colors from "../config/colors";
 import ApiService from "../config/services";
 import { useStoreActions, useStoreState } from "../util/token.store";
 import { useTranslation } from "react-i18next";
@@ -29,9 +34,12 @@ function ConfirmCodeScreen(props: ConfirmCodeScreenProps) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
   const riderData = useStoreState((state) => state.data);
-  const [inputStyle, setInputStyle] = useState(styles.box);
+  const [inputStyle, setInputStyle] = useState(styles.otpInput);
   const inputs = useRef<(TextInput | null)[]>([]);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  const buttonScale = useRef(new Animated.Value(1)).current;
+  const resendScale = useRef(new Animated.Value(1)).current;
 
   const handleOtpChange = (value: string, index: number) => {
     let newOtp = [...otp];
@@ -62,7 +70,7 @@ function ConfirmCodeScreen(props: ConfirmCodeScreenProps) {
     e: NativeSyntheticEvent<TextInputKeyPressEventData>,
     index: number
   ) => {
-    setInputStyle({ ...styles.box, borderColor: "#D5D5D5" });
+    setInputStyle({ ...styles.otpInput, borderColor: colors.border });
 
     if (e.nativeEvent.key === "Backspace") {
       const newOtp = [...otp];
@@ -76,34 +84,47 @@ function ConfirmCodeScreen(props: ConfirmCodeScreenProps) {
   };
 
   const loadHome = async () => {
-    if (otp.join("").length == 0 || otp.join("").length < 6) {
-      setInputStyle({ ...styles.box, borderColor: "red" });
-      Vibration.vibrate(500);
-      return;
-    }
+    try {
+      console.log("Confirm button pressed!");
+      console.log("Current OTP:", otp);
+      console.log("OTP joined:", otp.join(""));
+      console.log("OTP length:", otp.join("").length);
+      
+      if (otp.join("").length == 0 || otp.join("").length < 6) {
+        console.log("OTP validation failed - not enough digits");
+        setInputStyle({ ...styles.otpInput, borderColor: colors.error });
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        Vibration.vibrate(500);
+        return;
+      }
     const cleanedOTP = parseInt(otp.join(""));
+    console.log("Cleaned OTP:", cleanedOTP);
 
     if (Number.isNaN(cleanedOTP)) {
+      console.log("OTP is not a number");
       Toast.show({
         type: "error",
-        text1: t("confirmCodeScreen.text.invalidOtp"),
-        text2: t("confirmCodeScreen.text.otpDigitsOnly"),
+        text1: t("screens.confirmCodeScreen.text.invalidOtp"),
+        text2: t("screens.confirmCodeScreen.text.otpDigitsOnly"),
       });
       return;
     }
 
+    console.log("Dismissing keyboard and starting API call");
     Keyboard.dismiss();
     setIsLoading(true);
 
+    console.log("Calling validateOTP with email:", riderData.riderEmail, "OTP:", cleanedOTP);
     const response = await ApiService.validateOTP(
       riderData.riderEmail,
       cleanedOTP
     );
+    console.log("OTP validation response:", response);
     setIsLoading(false);
     if (response?.status === 400) {
       Toast.show({
         type: "error",
-        text1: t("confirmCodeScreen.text.validationError"),
+        text1: t("screens.confirmCodeScreen.text.validationError"),
         text2: response?.data?.message,
       });
       return;
@@ -119,8 +140,8 @@ function ConfirmCodeScreen(props: ConfirmCodeScreenProps) {
       if (riderProfileResponse.status === 404) {
         Toast.show({
           type: "error",
-          text1: t("confirmCodeScreen.text.loginError"),
-          text2: t("confirmCodeScreen.text.noUserProfile"),
+          text1: t("screens.confirmCodeScreen.text.loginError"),
+          text2: t("screens.confirmCodeScreen.text.noUserProfile"),
         });
         return;
       }
@@ -131,15 +152,25 @@ function ConfirmCodeScreen(props: ConfirmCodeScreenProps) {
     } else {
       Toast.show({
         type: "error",
-        text1: t("confirmCodeScreen.text.error"),
-        text2: `${t("confirmCodeScreen.text.somethingWentWrong")} ${
+        text1: t("screens.confirmCodeScreen.text.error"),
+        text2: `${t("screens.confirmCodeScreen.text.somethingWentWrong")} ${
           response.message
         }`,
+      });
+    }
+    } catch (error) {
+      console.error("Error in loadHome function:", error);
+      setIsLoading(false);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "An unexpected error occurred. Please try again.",
       });
     }
   };
 
   const resendOTP = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     let user = {
       riderEmail: riderData.riderEmail,
       riderPassword: riderData.riderPassword,
@@ -152,38 +183,87 @@ function ConfirmCodeScreen(props: ConfirmCodeScreenProps) {
       if (response.code == 200) {
         Toast.show({
           type: "success",
-          text1: t("confirmCodeScreen.text.success"),
-          text2: t("confirmCodeScreen.text.otpResent"),
+          text1: t("screens.confirmCodeScreen.text.success"),
+          text2: t("screens.confirmCodeScreen.text.otpResent"),
         });
         return;
       }
     });
   };
 
+  const handleButtonPressIn = () => {
+    console.log("Button press IN");
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Animated.spring(buttonScale, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      tension: 300,
+    }).start();
+  };
+
+  const handleButtonPressOut = () => {
+    console.log("Button press OUT");
+    Animated.spring(buttonScale, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 300,
+    }).start();
+  };
+
+  const handleResendPressIn = () => {
+    Animated.spring(resendScale, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      tension: 300,
+    }).start();
+  };
+
+  const handleResendPressOut = () => {
+    Animated.spring(resendScale, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 300,
+    }).start();
+  };
+
   return (
-    <KeyboardAwareScrollView>
-      <TouchableOpacity onPress={Keyboard.dismiss}>
-        <View style={styles.container}>
-          <Toast />
-          <View style={styles.loginContainer}>
-            <View style={{ marginBottom: 20 }}>
-              <Text style={styles.labelText}>
-                {t("confirmCodeScreen.text.sentEmail")}{" "}
-                <Text category="h6">{riderData.riderEmail.toLowerCase()} </Text>
-              </Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginBottom: 30,
-              }}
-            >
-              {otp.map((digit, index) => (
+    <KeyboardAwareScrollView style={styles.container}>
+      <TouchableOpacity onPress={Keyboard.dismiss} style={styles.touchableContainer}>
+        <Toast />
+        <LinearGradient
+          colors={[colors.primary + "10", colors.support]}
+          style={styles.headerSection}
+        >
+          <View style={styles.iconContainer}>
+            <MaterialCommunityIcons
+              name="shield-check"
+              size={64}
+              color={colors.primary}
+            />
+          </View>
+          <Text style={styles.title}>
+            {t("screens.confirmCodeScreen.title")}
+          </Text>
+          <Text style={styles.subtitle}>
+            {t("screens.confirmCodeScreen.text.sentEmail")}{" "}
+            <Text style={styles.emailText}>{riderData.riderEmail.toLowerCase()}</Text>
+          </Text>
+        </LinearGradient>
+
+        <View style={styles.contentSection}>
+          <Text style={styles.instructionText}>
+            {t("screens.confirmCodeScreen.text.enterCode") || "Enter the 6-digit code sent to your email"}
+          </Text>
+          
+          <View style={styles.otpContainer}>
+            {otp.map((digit, index) => (
+              <View key={index} style={styles.otpInputWrapper}>
                 <TextInput
-                  key={index}
                   autoComplete="one-time-code"
-                  style={inputStyle}
+                  style={[
+                    inputStyle,
+                    digit ? styles.otpInputFilled : null,
+                  ]}
                   maxLength={index === 0 ? otp.length : 1}
                   keyboardType="numeric"
                   onChangeText={(value) => handleOtpChange(value, index)}
@@ -192,38 +272,59 @@ function ConfirmCodeScreen(props: ConfirmCodeScreenProps) {
                     inputs.current[index] = input;
                   }}
                   onKeyPress={(e) => handleKeyPress(e, index)}
+                  placeholderTextColor={colors.textLight}
                 />
-              ))}
-            </View>
-            <Button
+              </View>
+            ))}
+          </View>
+
+          <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+            <TouchableOpacity
               disabled={isLoading}
-              style={styles.button}
               onPress={loadHome}
+              onPressIn={handleButtonPressIn}
+              onPressOut={handleButtonPressOut}
+              activeOpacity={0.9}
             >
-              {t("confirmCodeScreen.text.confirmCode")}
-            </Button>
-            <Text style={styles.text}>
-              {t("confirmCodeScreen.text.didntGetCode")}
-              <Text
-                style={{ fontWeight: "700", color: "#E60000" }}
-                onPress={resendOTP}
+              <LinearGradient
+                colors={colors.gradient.primary}
+                style={[styles.button, { opacity: isLoading ? 0.7 : 1 }]}
               >
-                {" "}
-                {t("confirmCodeScreen.text.resendIt")}
-              </Text>
+                <Text style={styles.buttonText}>
+                  {t("screens.confirmCodeScreen.text.confirmCode")}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </Animated.View>
+
+          <View style={styles.resendContainer}>
+            <Text style={styles.resendText}>
+              {t("screens.confirmCodeScreen.text.didntGetCode")}
             </Text>
-            {isLoading && (
+            <Animated.View style={{ transform: [{ scale: resendScale }] }}>
+              <TouchableOpacity
+                onPress={resendOTP}
+                onPressIn={handleResendPressIn}
+                onPressOut={handleResendPressOut}
+                activeOpacity={0.7}
+                style={styles.resendButton}
+              >
+                <Text style={styles.resendButtonText}>
+                  {t("screens.confirmCodeScreen.text.resendIt")}
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
+          </View>
+
+          {isLoading && (
+            <View style={styles.loadingContainer}>
               <LottieView
-                style={{
-                  alignSelf: "center",
-                  width: 72,
-                  height: 72,
-                }}
+                style={styles.loadingAnimation}
                 source={constants.LOADING_TWO}
                 autoPlay
               />
-            )}
-          </View>
+            </View>
+          )}
         </View>
       </TouchableOpacity>
     </KeyboardAwareScrollView>
@@ -231,52 +332,143 @@ function ConfirmCodeScreen(props: ConfirmCodeScreenProps) {
 }
 
 const styles = StyleSheet.create({
-  box: {
-    borderWidth: 1,
-    borderColor: "#D5D5D5",
-    width: "14%",
-    height: 40,
-    margin: 10,
-    textAlign: "center",
-    fontSize: 20,
-  },
-  button: {
-    borderRadius: 100,
-    borderWidth: 0,
-    width: "100%",
-    height: 55,
-    backgroundColor: "#E60000",
-    marginBottom: 30,
-  },
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
-    alignItems: "center",
-    marginHorizontal: 20,
-    justifyContent: "space-around",
-    paddingTop: StatusBar.currentHeight,
+    backgroundColor: colors.support,
   },
-  input: {
-    width: "100%",
-    height: 55,
-    marginBottom: 30,
-    borderColor: "#D5D5D5",
+  touchableContainer: {
+    flex: 1,
+    minHeight: "100%",
   },
-  loginContainer: {
-    width: "84%",
-    marginTop: "52%",
+  headerSection: {
+    paddingTop: 60,
+    paddingBottom: 40,
+    paddingHorizontal: 20,
     alignItems: "center",
   },
-  labelText: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#616161",
-    lineHeight: 26.4,
+  iconContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: colors.secondary,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 24,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
   },
-  text: {
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.text,
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  subtitle: {
     fontSize: 16,
     fontWeight: "400",
-    color: "#616161",
+    fontFamily: "Inter",
+    color: colors.textLight,
+    textAlign: "center",
+    lineHeight: 24,
+  },
+  emailText: {
+    fontWeight: "600",
+    color: colors.primary,
+  },
+  contentSection: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 32,
+  },
+  instructionText: {
+    fontSize: 14,
+    fontWeight: "500",
+    fontFamily: "Inter",
+    color: colors.textLight,
+    textAlign: "center",
+    marginBottom: 32,
+  },
+  otpContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 40,
+    paddingHorizontal: 4,
+  },
+  otpInputWrapper: {
+    flex: 1,
+    marginHorizontal: 4,
+  },
+  otpInput: {
+    backgroundColor: colors.secondary,
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderRadius: 12,
+    height: 56,
+    fontSize: 24,
+    fontWeight: "600",
+    fontFamily: "Inter",
+    textAlign: "center",
+    color: colors.text,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  otpInputFilled: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primary + "08",
+  },
+  button: {
+    height: 56,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 32,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.secondary,
+  },
+  resendContainer: {
+    alignItems: "center",
+  },
+  resendText: {
+    fontSize: 14,
+    fontWeight: "400",
+    fontFamily: "Inter",
+    color: colors.textLight,
+    marginBottom: 8,
+  },
+  resendButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  resendButtonText: {
+    fontSize: 14,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.primary,
+  },
+  loadingContainer: {
+    alignItems: "center",
+    marginTop: 20,
+  },
+  loadingAnimation: {
+    width: 60,
+    height: 60,
   },
 });
 export default ConfirmCodeScreen;

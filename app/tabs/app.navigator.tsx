@@ -2,6 +2,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import { View, Text, TouchableWithoutFeedback } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import colors from "../config/colors";
 import ConfirmCodeScreen from "../screens/ConfirmCodeScreen";
 import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
@@ -22,16 +23,7 @@ function AppNavigator() {
       <Navigator initialRouteName="LoginScreen">
         <Screen
           options={{
-            title: "Login",
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTintColor: "#fff",
-            headerTitleStyle: {
-              color: "white",
-              fontSize: 20,
-              fontWeight: "bold",
-            },
+            headerShown: false,
           }}
           name="LoginScreen"
           component={LoginScreen}
@@ -41,15 +33,22 @@ function AppNavigator() {
           component={ConfirmCodeScreen}
           options={{
             title: "Verification",
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTintColor: "#fff",
+            headerBackground: () => (
+              <LinearGradient
+                colors={colors.gradient.primary}
+                style={{ flex: 1 }}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              />
+            ),
+            headerTintColor: colors.secondary,
             headerTitleStyle: {
-              color: "white",
-              fontSize: 20,
-              fontWeight: "bold",
+              color: colors.secondary,
+              fontSize: 18,
+              fontWeight: "700",
+              fontFamily: "Inter",
             },
+            headerShadowVisible: true,
           }}
         ></Screen>
         <Screen
@@ -57,15 +56,22 @@ function AppNavigator() {
           component={TermsAndConditionsScreen}
           options={{
             title: "Terms & Conditions",
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTintColor: "#fff",
+            headerBackground: () => (
+              <LinearGradient
+                colors={colors.gradient.primary}
+                style={{ flex: 1 }}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              />
+            ),
+            headerTintColor: colors.secondary,
             headerTitleStyle: {
-              color: "white",
-              fontSize: 20,
-              fontWeight: "bold",
+              color: colors.secondary,
+              fontSize: 18,
+              fontWeight: "700",
+              fontFamily: "Inter",
             },
+            headerShadowVisible: true,
           }}
         ></Screen>
         <Screen
@@ -73,31 +79,45 @@ function AppNavigator() {
           component={ForgotPasswordScreen}
           options={{
             title: "Forgot Password",
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTintColor: "#fff",
+            headerBackground: () => (
+              <LinearGradient
+                colors={colors.gradient.primary}
+                style={{ flex: 1 }}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              />
+            ),
+            headerTintColor: colors.secondary,
             headerTitleStyle: {
-              color: "white",
-              fontSize: 20,
-              fontWeight: "bold",
+              color: colors.secondary,
+              fontSize: 18,
+              fontWeight: "700",
+              fontFamily: "Inter",
             },
+            headerShadowVisible: true,
           }}
         ></Screen>
         <Screen
           name="ResetPasswordScreen"
           component={ResetPasswordScreen}
           options={{
-            title: "ResetPassword",
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTintColor: "#fff",
+            title: "Reset Password",
+            headerBackground: () => (
+              <LinearGradient
+                colors={colors.gradient.primary}
+                style={{ flex: 1 }}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              />
+            ),
+            headerTintColor: colors.secondary,
             headerTitleStyle: {
-              color: "white",
-              fontSize: 20,
-              fontWeight: "bold",
+              color: colors.secondary,
+              fontSize: 18,
+              fontWeight: "700",
+              fontFamily: "Inter",
             },
+            headerShadowVisible: true,
           }}
         ></Screen>
         <Screen
@@ -111,25 +131,31 @@ function AppNavigator() {
               >
                 <View
                   style={{
-                    height: 40,
-                    width: 40,
-                    backgroundColor: "#353535",
-                    borderRadius: 16,
+                    height: 44,
+                    width: 44,
+                    backgroundColor: colors.primary,
+                    borderRadius: 22,
                     alignItems: "center",
                     justifyContent: "center",
                     marginBottom: 10,
+                    elevation: 3,
+                    shadowColor: colors.shadow,
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3,
                   }}
                 >
                   <Text
                     style={{
-                      fontWeight: "bold",
+                      fontWeight: "700",
                       textTransform: "uppercase",
                       fontSize: 16,
-                      color: "#fff",
+                      color: colors.secondary,
+                      fontFamily: "Inter",
                     }}
                   >
-                    {riderFirstName.charAt(0).toUpperCase()}
-                    {riderLastName.charAt(0).toUpperCase()}
+                    {riderFirstName?.charAt(0)?.toUpperCase() || 'U'}
+                    {riderLastName?.charAt(0)?.toUpperCase() || 'S'}
                   </Text>
                 </View>
               </TouchableWithoutFeedback>

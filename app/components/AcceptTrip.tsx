@@ -1,65 +1,127 @@
-import { Button, Text } from "@ui-kitten/components";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View, Text, TouchableOpacity, Animated } from "react-native";
+import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import colors from "../config/colors";
 
 interface AcceptTripProps {
   dismissModal: any;
 }
 
 export default function AcceptTrip(props: AcceptTripProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const buttonScale = React.useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Animated.spring(buttonScale, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      tension: 300,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(buttonScale, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 300,
+    }).start();
+  };
 
   return (
     <View style={styles.container}>
-      <Image source={require("../assets/AcceptImage.png")} />
-      <Text style={styles.decline}>
-        {t("components.acceptTrip.messages.tripAccepted")}
-      </Text>
-      <Text style={styles.confirmText}>
-        {t("components.acceptTrip.messages.confirmationText")}
-      </Text>
-      <Button style={styles.dismissButton} onPress={props.dismissModal}>
-        {(evaProps: React.ComponentProps<typeof Text>) => (
-          <Text
-            {...evaProps}
-            style={{ color: "#616161", fontWeight: "700", fontSize: 14 }}
+      <LinearGradient
+        colors={[colors.secondary, colors.support]}
+        style={styles.gradient}
+      >
+        <View style={styles.iconContainer}>
+          <MaterialCommunityIcons
+            name="check-circle"
+            size={80}
+            color={colors.success}
+          />
+        </View>
+        
+        <Text style={styles.title}>
+          {t("components.acceptTrip.messages.tripAccepted")}
+        </Text>
+        
+        <Text style={styles.message}>
+          {t("components.acceptTrip.messages.confirmationText")}
+        </Text>
+        
+        <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={props.dismissModal}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+            activeOpacity={0.8}
           >
-            {t("components.acceptTrip.buttons.dismiss.text")}
-          </Text>
-        )}
-      </Button>
+            <Text style={styles.buttonText}>
+              {t("components.acceptTrip.buttons.dismiss.text")}
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </LinearGradient>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  confirmText: {
-    fontSize: 18,
-    fontWeight: "400",
-    textAlign: "center",
-    lineHeight: 26.4,
-  },
   container: {
-    width: "auto",
-    height: 380,
-    backgroundColor: "#FFF",
+    borderRadius: 20,
+    overflow: "hidden",
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 10,
+  },
+  gradient: {
+    paddingHorizontal: 32,
+    paddingVertical: 40,
     alignItems: "center",
     justifyContent: "center",
-    padding: 16,
-    borderRadius: 16,
+    minHeight: 320,
   },
-  decline: {
+  iconContainer: {
+    marginBottom: 24,
+  },
+  title: {
     fontSize: 24,
     fontWeight: "700",
-    marginBottom: 10,
+    fontFamily: "Inter",
+    color: colors.text,
+    textAlign: "center",
+    marginBottom: 16,
   },
-  dismissButton: {
-    width: 225,
-    height: 39,
-    borderRadius: 16,
-    backgroundColor: "#D5D5D5",
-    borderWidth: 0,
-    marginVertical: 10,
+  message: {
+    fontSize: 16,
+    fontWeight: "400",
+    fontFamily: "Inter",
+    color: colors.textLight,
+    textAlign: "center",
+    lineHeight: 24,
+    marginBottom: 32,
+  },
+  button: {
+    backgroundColor: colors.support,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    minWidth: 200,
+    alignItems: "center",
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    fontFamily: "Inter",
+    color: colors.text,
   },
 });

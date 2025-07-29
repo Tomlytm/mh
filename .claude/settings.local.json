@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx react-native:*)",
+      "Bash(npx metro:*)",
+      "Bash(npx expo start:*)",
+      "Bash(npx eas build:*)",
+      "Bash(npm install:*)",
+      "Bash(eas build:*)",
+      "Bash(npx expo run:android:*)",
+      "Bash(./gradlew:*)",
+      "Bash(chmod:*)",
+      "Bash(dos2unix:*)",
+      "Bash(npx expo install:*)",
+      "Bash(eas project:init:*)",
+      "Bash(eas credentials:*)",
+      "Bash(grep:*)"
+    ],
+    "deny": []
+  }
+}

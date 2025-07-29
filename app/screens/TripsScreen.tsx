@@ -1,5 +1,4 @@
 import { useFocusEffect } from "@react-navigation/native";
-import { Input, Text } from "@ui-kitten/components";
 import React, { useCallback, useState } from "react";
 import {
   FlatList,
@@ -7,7 +6,13 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Animated,
 } from "react-native";
+import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
 import Modal from "react-native-modal";
 import Toast from "react-native-toast-message";
 import AcceptTrip from "../components/AcceptTrip";
@@ -26,8 +31,9 @@ import { orderInformation } from "../util/app.interface";
 import { useStoreState } from "../util/token.store";
 import LottieView from "lottie-react-native";
 import constants from "../config/constants";
+import colors from "../config/colors";
 import { useTranslation } from "react-i18next";
-import {MaterialCommunityIcons} from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 
 interface TripsScreenProps {
@@ -43,6 +49,7 @@ type StatusFlags = {
 };
 export default function TripsScreen(props: TripsScreenProps) {
   const [searchValue, setSearchValue] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
   const [modalVisible, setModalVisible] = useState({
     newTrip: false,
     pendingTrip: false,
@@ -87,6 +94,47 @@ export default function TripsScreen(props: TripsScreenProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [orderDetailFlag, setOrderDetailFlag] = useState<Number>(0);
   const riderDetail = useStoreState((state) => state.data);
+
+  const searchBorderColor = React.useRef(new Animated.Value(0)).current;
+  const tabAnimations = React.useRef({
+    new: new Animated.Value(1),
+    pending: new Animated.Value(0.7),
+    completed: new Animated.Value(0.7),
+  }).current;
+
+  const animatedSearchBorderColor = searchBorderColor.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.border, colors.primary],
+  });
+
+  const handleSearchFocus = () => {
+    setSearchFocused(true);
+    Animated.timing(searchBorderColor, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const handleSearchBlur = () => {
+    setSearchFocused(false);
+    Animated.timing(searchBorderColor, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const animateTabSwitch = (selectedMode: Mode) => {
+    const tabs = ["new", "pending", "completed"] as Mode[];
+    tabs.forEach((tab) => {
+      Animated.timing(tabAnimations[tab], {
+        toValue: tab === selectedMode ? 1 : 0.7,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    });
+  };
 
   const fetchTrips = async (mode: string) => {
     setFilteredDataSource([]);
@@ -154,6 +202,7 @@ export default function TripsScreen(props: TripsScreenProps) {
   useFocusEffect(
     useCallback(() => {
       setMode("new");
+      animateTabSwitch("new");
     }, [])
   );
 
@@ -371,24 +420,33 @@ export default function TripsScreen(props: TripsScreenProps) {
       );
     }
   };
-const renderIcon = () => (
-  <MaterialCommunityIcons
-    name="magnify"
-    size={24}
-    color="#E60000"
-    style={styles.icon}
-  />
-);
-
+  const renderSearchIcon = () => (
+    <MaterialCommunityIcons
+      name="magnify"
+      size={20}
+      color={searchFocused ? colors.primary : colors.textLight}
+      style={styles.searchIcon}
+    />
+  );
 
   const renderNoTripsView = (message: string) => (
-    <View style={styles.noTripsContainer}><MaterialCommunityIcons
-  name="close-box-outline"
-  size={64}
-  color="#000"
-/>
-
-      <Text category="h5">{message}</Text>
+    <View style={styles.noTripsContainer}>
+      <View style={styles.emptyStateIcon}>
+        <MaterialCommunityIcons
+          name="package-variant-closed"
+          size={48}
+          color={colors.textLight}
+        />
+      </View>
+      <Text style={styles.emptyStateText}>{message}</Text>
+      <Text style={styles.emptyStateSubtext}>
+        {mode === "new" 
+          ? "New trips will appear here when available"
+          : mode === "pending"
+          ? "Active trips will be shown here"
+          : "Your completed trips history"
+        }
+      </Text>
     </View>
   );
   const { t, i18n } = useTranslation();
@@ -396,85 +454,142 @@ const renderIcon = () => (
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <Text style={styles.headerText}>{t("screens.tripsScreen.title")}</Text>
-        <Input
-          value={searchValue}
-          style={styles.input}
-          placeholder={t("screens.tripsScreen.text.inputPlaceholder")}
-          accessoryLeft={renderIcon}
-          onChangeText={searchFilterFunction}
-        />
+        <LinearGradient
+          colors={[colors.primary + "08", colors.support]}
+          style={styles.headerSection}
+        >
+          <Text style={styles.headerText}>{t("screens.tripsScreen.title")}</Text>
+          
+          <Animated.View
+            style={[
+              styles.searchContainer,
+              { borderColor: animatedSearchBorderColor },
+            ]}
+          >
+            {renderSearchIcon()}
+            <TextInput
+              value={searchValue}
+              style={styles.searchInput}
+              placeholder={t("screens.tripsScreen.text.inputPlaceholder")}
+              placeholderTextColor={colors.textLight}
+              onChangeText={searchFilterFunction}
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
+            />
+            {searchValue.length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  setSearchValue("");
+                  setFilteredDataSource(tripData[mode]);
+                }}
+                style={styles.clearButton}
+              >
+                <MaterialCommunityIcons
+                  name="close-circle"
+                  size={20}
+                  color={colors.textLight}
+                />
+              </TouchableOpacity>
+            )}
+          </Animated.View>
+        </LinearGradient>
 
-        <View style={styles.textWrapper}>
-          {["new", "pending", "completed"].map((type) => (
-            <Text
+        <View style={styles.tabContainer}>
+          {(["new", "pending", "completed"] as Mode[]).map((type) => (
+            <Animated.View
               key={type}
-              style={[styles.headerText, mode !== type && { color: "#959595" }]}
-              onPress={() => {
-                setTripData({
-                  new: [],
-                  pending: [],
-                  completed: [],
-                  cancelled: [],
-                });
-                setMode(convertStringToMode(type));
-                setFilteredDataSource(tripData[convertStringToMode(type)]);
-              }}
+              style={[
+                styles.tabItem,
+                { opacity: tabAnimations[type] },
+              ]}
             >
-              {t(`screens.tripsScreen.text.tabs.${type}`)}
-            </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setTripData({
+                    new: [],
+                    pending: [],
+                    completed: [],
+                    cancelled: [],
+                  });
+                  setMode(type);
+                  animateTabSwitch(type);
+                  setFilteredDataSource(tripData[type]);
+                }}
+                style={[
+                  styles.tabButton,
+                  mode === type && styles.tabButtonActive,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    mode === type && styles.tabTextActive,
+                  ]}
+                >
+                  {t(`screens.tripsScreen.text.tabs.${type}`)}
+                </Text>
+                {mode === type && <View style={styles.tabIndicator} />}
+              </TouchableOpacity>
+            </Animated.View>
           ))}
         </View>
 
-        {isLoading && (
-          <LottieView
-            style={{
-              width: 72,
-              height: 72,
-              alignSelf: "center",
-              marginTop: 124,
-            }}
-            source={constants.LOADING_TWO}
-            autoPlay
-          />
-        )}
-
-        {["new", "pending", "completed"].map((type) => (
-          <React.Fragment key={type}>
-            {mode === type && filteredDataSource.length > 0 && (
-              <FlatList
-                data={filteredDataSource}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => {
-                  const TripComponent =
-                    type === "new"
-                      ? SingleTrip
-                      : type === "pending"
-                      ? SingleTripDetailed
-                      : CompletedTrip;
-                  return (
-                    <TripComponent
-                      data={item}
-                      toggleModal={() => {
-                        setModalData(item);
-                        handleModalToggle(`${type}Trip`, true);
-                      }}
-                    />
-                  );
-                }}
-                keyExtractor={(item) => item.logisticsOrderId.toString()}
+        <View style={styles.contentSection}>
+          {isLoading && (
+            <View style={styles.loadingContainer}>
+              <LottieView
+                style={styles.loadingAnimation}
+                source={constants.LOADING_TWO}
+                autoPlay
               />
-            )}
-          </React.Fragment>
-        ))}
-        {statusFlags[getStatusFlagKey(mode)] &&
-          renderNoTripsView(
-            t(
-              `screens.tripsScreen.text.statusMessages.no${capitalize(
-                mode
-              )}Trip`
-            )
+              <Text style={styles.loadingText}>Loading trips...</Text>
+            </View>
           )}
+
+          {!isLoading && (
+            <>
+              {["new", "pending", "completed"].map((type) => (
+                <React.Fragment key={type}>
+                  {mode === type && filteredDataSource.length > 0 && (
+                    <FlatList
+                      data={filteredDataSource}
+                      showsVerticalScrollIndicator={false}
+                      contentContainerStyle={styles.listContainer}
+                      renderItem={({ item }) => {
+                        const TripComponent =
+                          type === "new"
+                            ? SingleTrip
+                            : type === "pending"
+                            ? SingleTripDetailed
+                            : CompletedTrip;
+                        return (
+                          <TripComponent
+                            data={item}
+                            toggleModal={() => {
+                              setModalData(item);
+                              handleModalToggle(`${type}Trip`, true);
+                            }}
+                          />
+                        );
+                      }}
+                      keyExtractor={(item) => item.logisticsOrderId.toString()}
+                    />
+                  )}
+                </React.Fragment>
+              ))}
+              
+              {statusFlags[getStatusFlagKey(mode)] &&
+                renderNoTripsView(
+                  t(
+                    `screens.tripsScreen.text.statusMessages.no${capitalize(
+                      mode
+                    )}Trip`
+                  )
+                )}
+            </>
+          )}
+        </View>
         <Modal
           backdropOpacity={0.15}
           style={styles.modal}
@@ -680,38 +795,154 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: "#F9F8F8",
+    backgroundColor: colors.support,
+  },
+  headerSection: {
+    paddingTop: 60,
+    paddingBottom: 24,
+    paddingHorizontal: 20,
   },
   headerText: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 28,
+    fontWeight: "700",
+    fontFamily: "Inter",
+    color: colors.text,
+    marginBottom: 20,
   },
-  icon: {
-    width: 32,
-    height: 32,
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.secondary,
+    borderRadius: 12,
+    borderWidth: 2,
+    paddingHorizontal: 16,
+    height: 48,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  input: {
-    width: "100%",
-    height: 55,
-    marginVertical: 8,
+  searchIcon: {
+    marginRight: 12,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: "Inter",
+    color: colors.text,
+    paddingVertical: 0,
+  },
+  clearButton: {
+    padding: 4,
+  },
+  tabContainer: {
+    flexDirection: "row",
+    backgroundColor: colors.secondary,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 1,
+  },
+  tabItem: {
+    flex: 1,
+  },
+  tabButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    alignItems: "center",
+    position: "relative",
+  },
+  tabButtonActive: {
+    backgroundColor: colors.primary + "10",
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#E5E5E5",
   },
-  noTripsContainer: {
-    alignSelf: "center",
+  tabText: {
+    fontSize: 16,
+    fontWeight: "500",
+    fontFamily: "Inter",
+    color: colors.textLight,
+  },
+  tabTextActive: {
+    color: colors.primary,
+    fontWeight: "700",
+  },
+  tabIndicator: {
+    position: "absolute",
+    bottom: 0,
+    left: "25%",
+    right: "25%",
+    height: 3,
+    backgroundColor: colors.primary,
+    borderRadius: 2,
+  },
+  contentSection: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  loadingContainer: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    // alignContent: "center",
-    width: "auto",
-    height: "30%",
+    paddingTop: 60,
   },
-  modal: { margin: 0, flex: 1, justifyContent: "flex-end" },
-  textWrapper: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-    marginBottom: 10,
+  loadingAnimation: {
+    width: 80,
+    height: 80,
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "500",
+    fontFamily: "Inter",
+    color: colors.textLight,
+    marginTop: 16,
+  },
+  listContainer: {
+    paddingVertical: 16,
+  },
+  noTripsContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 40,
+    paddingTop: 60,
+  },
+  emptyStateIcon: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: colors.secondary,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 24,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  emptyStateText: {
+    fontSize: 20,
+    fontWeight: "600",
+    fontFamily: "Inter",
+    color: colors.text,
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    fontWeight: "400",
+    fontFamily: "Inter",
+    color: colors.textLight,
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  modal: {
+    margin: 0,
+    flex: 1,
+    justifyContent: "flex-end",
   },
 });
