@@ -9,8 +9,8 @@
     "newArchEnabled": true,
     "splash": {
       "image": "./app/assets/LRMSplashScreen.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#000000"
+      "resizeMode": "cover",
+      "backgroundColor": "#E60000"
     },
     "assetBundlePatterns": [
       "**/*"
